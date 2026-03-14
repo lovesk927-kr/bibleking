@@ -1,0 +1,8 @@
+node_modules/
+dist/
+release/
+*.db
+.DS_Store
+Thumbs.db
+스크린샷/
+암송킹_소개.html
