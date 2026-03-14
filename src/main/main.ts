@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { autoUpdater } from 'electron-updater';
 import fs from 'fs';
 import path from 'path';
 import { initDatabase } from './db';
@@ -60,6 +61,41 @@ app.whenReady().then(async () => {
   await initDatabase();
   registerIpcHandlers();
   createWindow();
+
+  // 자동 업데이트 체크
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+
+  autoUpdater.on('update-available', (info) => {
+    mainWindow?.webContents.send('update:status', { type: 'available', version: info.version });
+  });
+
+  autoUpdater.on('download-progress', (progress) => {
+    mainWindow?.webContents.send('update:status', { type: 'progress', percent: Math.round(progress.percent) });
+  });
+
+  autoUpdater.on('update-downloaded', () => {
+    mainWindow?.webContents.send('update:status', { type: 'downloaded' });
+    dialog.showMessageBox(mainWindow!, {
+      type: 'info',
+      title: '업데이트 준비 완료',
+      message: '새 버전이 다운로드되었습니다. 앱을 재시작하면 업데이트가 적용됩니다.',
+      buttons: ['지금 재시작', '나중에'],
+    }).then((result) => {
+      if (result.response === 0) {
+        autoUpdater.quitAndInstall();
+      }
+    });
+  });
+
+  autoUpdater.on('error', (err) => {
+    console.log('Auto-update error:', err.message);
+  });
+
+  // 개발 모드가 아닐 때만 업데이트 체크
+  if (process.env.NODE_ENV !== 'development') {
+    autoUpdater.checkForUpdates().catch(() => {});
+  }
 });
 
 app.on('window-all-closed', () => {

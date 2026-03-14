@@ -63,6 +63,14 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.removeAllListeners('pvp:event');
   },
 
+  // 업데이트
+  onUpdateStatus: (callback: (event: any, data: any) => void) => {
+    ipcRenderer.on('update:status', callback);
+  },
+  removeUpdateListener: () => {
+    ipcRenderer.removeAllListeners('update:status');
+  },
+
   // 소모품
   getConsumables: (characterId: number) => ipcRenderer.invoke('consumable:getAll', characterId),
   useConsumable: (data: { characterId: number; type: string }) => ipcRenderer.invoke('consumable:use', data),
