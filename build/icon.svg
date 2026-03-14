@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a3e"/>
+      <stop offset="100%" style="stop-color:#0a0a2a"/>
+    </linearGradient>
+    <linearGradient id="sword" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e0e0e0"/>
+      <stop offset="100%" style="stop-color:#a0a0a0"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700"/>
+      <stop offset="100%" style="stop-color:#b8960f"/>
+    </linearGradient>
+    <linearGradient id="helmet" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#c0c0c0"/>
+      <stop offset="100%" style="stop-color:#707070"/>
+    </linearGradient>
+    <linearGradient id="bible" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#5c3a1e"/>
+      <stop offset="100%" style="stop-color:#8b5a2b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="128" cy="128" r="124" fill="url(#bg)" stroke="#ffd700" stroke-width="4"/>
+
+  <!-- Bible book (center-bottom) -->
+  <g transform="translate(128, 175)">
+    <!-- Book body -->
+    <rect x="-38" y="-22" width="76" height="44" rx="3" fill="url(#bible)" stroke="#3a2210" stroke-width="1.5"/>
+    <!-- Book spine -->
+    <line x1="0" y1="-22" x2="0" y2="22" stroke="#3a2210" stroke-width="2"/>
+    <!-- Pages -->
+    <rect x="-35" y="-19" width="33" height="38" rx="1" fill="#f5f0e0" opacity="0.9"/>
+    <rect x="2" y="-19" width="33" height="38" rx="1" fill="#f5f0e0" opacity="0.9"/>
+    <!-- Cross on cover -->
+    <line x1="-17" y1="-12" x2="-17" y2="8" stroke="#ffd700" stroke-width="2.5"/>
+    <line x1="-24" y1="-5" x2="-10" y2="-5" stroke="#ffd700" stroke-width="2.5"/>
+    <line x1="18" y1="-12" x2="18" y2="8" stroke="#ffd700" stroke-width="2.5"/>
+    <line x1="11" y1="-5" x2="25" y2="-5" stroke="#ffd700" stroke-width="2.5"/>
+    <!-- Text lines -->
+    <line x1="-30" y1="-10" x2="-5" y2="-10" stroke="#999" stroke-width="1" opacity="0.4"/>
+    <line x1="-30" y1="-3" x2="-8" y2="-3" stroke="#999" stroke-width="1" opacity="0.4"/>
+    <line x1="7" y1="-10" x2="30" y2="-10" stroke="#999" stroke-width="1" opacity="0.4"/>
+    <line x1="7" y1="-3" x2="28" y2="-3" stroke="#999" stroke-width="1" opacity="0.4"/>
+  </g>
+
+  <!-- Sword (left, angled) -->
+  <g transform="translate(78, 95) rotate(-25)">
+    <!-- Blade -->
+    <polygon points="0,-55 5,-50 5,15 -5,15 -5,-50" fill="url(#sword)" stroke="#888" stroke-width="0.5"/>
+    <!-- Blade tip -->
+    <polygon points="0,-65 5,-50 -5,-50" fill="#e8e8e8"/>
+    <!-- Blade shine -->
+    <line x1="-1" y1="-55" x2="-1" y2="10" stroke="white" stroke-width="1.5" opacity="0.4"/>
+    <!-- Guard -->
+    <rect x="-16" y="15" width="32" height="7" rx="2" fill="url(#gold)"/>
+    <!-- Handle -->
+    <rect x="-4" y="22" width="8" height="22" rx="2" fill="#5c3a1e"/>
+    <!-- Handle wrap -->
+    <line x1="-3" y1="26" x2="3" y2="28" stroke="#8b5a2b" stroke-width="1.5"/>
+    <line x1="-3" y1="31" x2="3" y2="33" stroke="#8b5a2b" stroke-width="1.5"/>
+    <line x1="-3" y1="36" x2="3" y2="38" stroke="#8b5a2b" stroke-width="1.5"/>
+    <!-- Pommel -->
+    <circle cx="0" cy="46" r="5" fill="url(#gold)"/>
+  </g>
+
+  <!-- Helmet (right, center) -->
+  <g transform="translate(175, 90)">
+    <!-- Helmet dome -->
+    <path d="M-30,10 Q-30,-25 0,-30 Q30,-25 30,10 L30,20 Q30,28 22,28 L-22,28 Q-30,28 -30,20 Z" fill="url(#helmet)" stroke="#555" stroke-width="1.5"/>
+    <!-- Helmet visor -->
+    <path d="M-20,5 L-20,18 Q-20,22 -15,22 L15,22 Q20,22 20,18 L20,5" fill="none" stroke="#444" stroke-width="2"/>
+    <!-- Eye slit -->
+    <rect x="-18" y="6" width="36" height="6" rx="1" fill="#222"/>
+    <!-- Visor bars -->
+    <line x1="-8" y1="6" x2="-8" y2="12" stroke="#555" stroke-width="1.5"/>
+    <line x1="0" y1="6" x2="0" y2="12" stroke="#555" stroke-width="1.5"/>
+    <line x1="8" y1="6" x2="8" y2="12" stroke="#555" stroke-width="1.5"/>
+    <!-- Nose guard -->
+    <line x1="0" y1="5" x2="0" y2="22" stroke="#666" stroke-width="2"/>
+    <!-- Helmet crest/top -->
+    <path d="M-5,-30 Q0,-38 5,-30" fill="url(#gold)" stroke="#b8960f" stroke-width="1"/>
+    <path d="M-3,-30 Q0,-35 3,-30 L3,-10 Q0,-5 -3,-10 Z" fill="#cc2222"/>
+    <!-- Helmet shine -->
+    <path d="M-20,-15 Q-15,-22 0,-25" fill="none" stroke="white" stroke-width="2" opacity="0.3"/>
+  </g>
+
+  <!-- Crown/title glow -->
+  <text x="128" y="52" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffd700" opacity="0.9">&#9876;</text>
+
+</svg>

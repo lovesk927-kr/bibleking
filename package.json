@@ -1,6 +1,6 @@
 {
   "name": "bible-game",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "main": "dist/main/main.js",
   "scripts": {
     "dev:renderer": "vite --config vite.config.ts",
@@ -24,6 +24,8 @@
     "concurrently": "^9.2.1",
     "electron": "^41.0.1",
     "electron-builder": "^26.8.1",
+    "sharp": "^0.34.5",
+    "to-ico": "^1.1.5",
     "typescript": "^5.9.3",
     "vite": "^8.0.0"
   },
@@ -52,13 +54,16 @@
     },
     "win": {
       "target": "nsis",
-      "icon": null,
+      "icon": "build/icon.ico",
       "signAndEditExecutable": false
     },
     "nsis": {
       "oneClick": true,
       "perMachine": false,
       "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "runAfterFinish": true,
+      "include": "build/installer.nsh",
       "artifactName": "암송킹-Setup-${version}.exe"
     },
     "extraResources": [

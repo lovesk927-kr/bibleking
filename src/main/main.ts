@@ -62,6 +62,18 @@ app.whenReady().then(async () => {
   registerIpcHandlers();
   createWindow();
 
+  // 최초 설치 후 실행 안내
+  if (process.argv.includes('--squirrel-firstrun') || process.argv.some(a => a.includes('--updated'))) {
+    mainWindow?.webContents.once('did-finish-load', () => {
+      dialog.showMessageBox(mainWindow!, {
+        type: 'info',
+        title: '암송킹 설치 완료!',
+        message: '암송킹이 설치되었습니다.\n바탕화면의 "암송킹" 바로가기로 실행할 수 있습니다.',
+        buttons: ['확인'],
+      });
+    });
+  }
+
   // 자동 업데이트 체크
   autoUpdater.autoDownload = true;
   autoUpdater.autoInstallOnAppQuit = true;
