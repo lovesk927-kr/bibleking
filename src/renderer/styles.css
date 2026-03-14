@@ -3659,6 +3659,14 @@ body {
   flex-shrink: 0;
 }
 
+.update-notice {
+  color: #888;
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+
 /* App Version */
 .main-footer {
   display: flex;

@@ -1,6 +1,6 @@
 {
   "name": "bible-game",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "main": "dist/main/main.js",
   "scripts": {
     "dev:renderer": "vite --config vite.config.ts",

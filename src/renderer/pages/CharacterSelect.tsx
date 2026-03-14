@@ -90,6 +90,8 @@ export function CharacterSelect({ onSelect, onCreate, onAdmin, onNetwork, isNetw
         )}
       </div>
 
+      <p className="update-notice">초기 버전이라 잦은 업데이트가 있을 수 있습니다</p>
+
       <div className="main-footer">
         <button className="btn-contact" onClick={() => setShowContact(true)}>문의하기</button>
         <div className="app-version">v{__APP_VERSION__}</div>

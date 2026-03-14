@@ -4,6 +4,7 @@ export const CHARACTER_INFO: Record<number, { name: string; emoji: string; image
   3: { name: '우스꽝스러운 모험가', emoji: '🤡', description: '엉뚱하지만 매력적인 캐릭터' },
   4: { name: '토끼 전사', emoji: '🐰', description: '귀엽지만 강한 토끼 전사' },
   5: { name: '피크민 용사', emoji: '🌱', image: 'assets/pikmin.jpg', description: '작지만 뭉치면 무적인 피크민 전사' },
+  6: { name: '우산 햄스터', emoji: '🐹', description: '우산을 쓴 귀여운 햄스터 모험가' },
 };
 
 export const RARITY_COLORS: Record<string, string> = {

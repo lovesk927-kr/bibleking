@@ -61,6 +61,11 @@ export function Inventory({ character, onBack }: Props) {
 
   const loadItems = async () => {
     const data = await api.getItems(character.id);
+    data.sort((a: Item, b: Item) => {
+      const nameCompare = a.name.localeCompare(b.name, 'ko');
+      if (nameCompare !== 0) return nameCompare;
+      return getEffectiveStat(b) - getEffectiveStat(a);
+    });
     setItems(data);
   };
 
