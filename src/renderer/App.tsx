@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CharacterSelect } from './pages/CharacterSelect';
 import { CharacterCreate } from './pages/CharacterCreate';
 import { MainScreen } from './pages/MainScreen';
@@ -151,6 +151,47 @@ function GamePlay({ character: initialCharacter, onBack, isNetworkMode }: {
   );
 }
 
+function UpdateOverlay() {
+  const [updateStatus, setUpdateStatus] = useState<{ type: string; version?: string; percent?: number } | null>(null);
+
+  useEffect(() => {
+    if (window.api?.onUpdateStatus) {
+      window.api.onUpdateStatus((_event: any, data: any) => {
+        setUpdateStatus(data);
+      });
+      return () => {
+        window.api.removeUpdateListener?.();
+      };
+    }
+  }, []);
+
+  if (!updateStatus || updateStatus.type === 'downloaded') return null;
+
+  return (
+    <div className="update-overlay">
+      <div className="update-overlay-box">
+        {updateStatus.type === 'available' && (
+          <>
+            <div className="update-overlay-icon">⬇️</div>
+            <div className="update-overlay-text">새 버전(v{updateStatus.version})을 다운로드 중입니다...</div>
+            <div className="update-overlay-sub">잠시만 기다려주세요</div>
+          </>
+        )}
+        {updateStatus.type === 'progress' && (
+          <>
+            <div className="update-overlay-icon">⬇️</div>
+            <div className="update-overlay-text">업데이트 다운로드 중... {updateStatus.percent}%</div>
+            <div className="update-progress-bar">
+              <div className="update-progress-fill" style={{ width: `${updateStatus.percent}%` }}></div>
+            </div>
+            <div className="update-overlay-sub">잠시만 기다려주세요</div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [networkMode, setNetworkMode] = useState<'local' | 'host' | 'client'>('local');
   const [networkClient, setNetworkClient] = useState<NetworkClient | null>(null);
@@ -213,6 +254,7 @@ export default function App() {
   // 로컬 모드
   return (
     <LocalApiProvider>
+      <UpdateOverlay />
       <LocalApp
         onHostMode={() => setNetworkMode('host')}
         onClientConnected={(client) => {

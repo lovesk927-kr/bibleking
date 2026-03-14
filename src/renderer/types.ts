@@ -150,6 +150,9 @@ declare global {
       importVerses: () => Promise<{ success: boolean; error?: string }>;
       exportCharacter: (characterId: number) => Promise<{ success: boolean; path?: string; error?: string }>;
       importCharacter: () => Promise<{ success: boolean; characterId?: number; error?: string }>;
+      // 업데이트
+      onUpdateStatus: (callback: (event: any, data: any) => void) => void;
+      removeUpdateListener: () => void;
     };
   }
 }
