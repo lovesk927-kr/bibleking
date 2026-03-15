@@ -246,31 +246,51 @@ function handleMessage(player: NetworkPlayer, msg: any) {
           return;
         }
 
-        // 네트워크 선물 전송: 호스트 DB에 직접 생성 + 수신자에게 알림 push
+        // 네트워크 선물 전송
+        // - 수신자가 호스트: 호스트 DB에 직접 저장
+        // - 수신자가 클라이언트: WebSocket으로 아이템 데이터 push → 클라이언트가 로컬 DB에 저장
         if (channel === 'gift:networkTransferItem') {
           const { item, targetPlayerId, targetCharacterId, senderName } = data;
-          if (!handlers) {
-            player.ws.send(JSON.stringify({ type: 'rpc:response', id, result: { success: false, message: '서버 오류' } }));
-            return;
-          }
-          const result = handlers['gift:receiveItem']({ characterId: targetCharacterId, item });
-          if (result.success) {
+          if (targetPlayerId === 'host') {
+            if (!handlers) {
+              player.ws.send(JSON.stringify({ type: 'rpc:response', id, result: { success: false, message: '서버 오류' } }));
+              return;
+            }
+            const result = handlers['gift:receiveItem']({ characterId: targetCharacterId, item });
+            if (result.success) sendGiftNotification(targetPlayerId, senderName, item.name, false);
+            player.ws.send(JSON.stringify({ type: 'rpc:response', id, result }));
+          } else {
+            const target = players.find(p => p.id === targetPlayerId);
+            if (!target || target.ws.readyState !== WebSocket.OPEN) {
+              player.ws.send(JSON.stringify({ type: 'rpc:response', id, result: { success: false, message: '대상 플레이어를 찾을 수 없습니다.' } }));
+              return;
+            }
+            target.ws.send(JSON.stringify({ type: 'gift:receiveItem', characterId: targetCharacterId, item }));
             sendGiftNotification(targetPlayerId, senderName, item.name, false);
+            player.ws.send(JSON.stringify({ type: 'rpc:response', id, result: { success: true } }));
           }
-          player.ws.send(JSON.stringify({ type: 'rpc:response', id, result }));
           return;
         }
         if (channel === 'gift:networkTransferConsumable') {
           const { targetPlayerId, targetCharacterId, type: cType, quantity, senderName, consumableLabel } = data;
-          if (!handlers) {
-            player.ws.send(JSON.stringify({ type: 'rpc:response', id, result: { success: false, message: '서버 오류' } }));
-            return;
-          }
-          const result = handlers['consumable:add']({ characterId: targetCharacterId, type: cType, quantity });
-          if (result.success) {
+          if (targetPlayerId === 'host') {
+            if (!handlers) {
+              player.ws.send(JSON.stringify({ type: 'rpc:response', id, result: { success: false, message: '서버 오류' } }));
+              return;
+            }
+            const result = handlers['consumable:add']({ characterId: targetCharacterId, type: cType, quantity });
+            if (result.success) sendGiftNotification(targetPlayerId, senderName, consumableLabel || cType, true);
+            player.ws.send(JSON.stringify({ type: 'rpc:response', id, result }));
+          } else {
+            const target = players.find(p => p.id === targetPlayerId);
+            if (!target || target.ws.readyState !== WebSocket.OPEN) {
+              player.ws.send(JSON.stringify({ type: 'rpc:response', id, result: { success: false, message: '대상 플레이어를 찾을 수 없습니다.' } }));
+              return;
+            }
+            target.ws.send(JSON.stringify({ type: 'consumable:add', characterId: targetCharacterId, consumableType: cType, quantity }));
             sendGiftNotification(targetPlayerId, senderName, consumableLabel || cType, true);
+            player.ws.send(JSON.stringify({ type: 'rpc:response', id, result: { success: true } }));
           }
-          player.ws.send(JSON.stringify({ type: 'rpc:response', id, result }));
           return;
         }
 
@@ -660,18 +680,20 @@ export function pvpEnd(surrenderId?: string) {
   }
 }
 
-// 호스트가 클라이언트에게 선물 전송 (DB 직접 저장 + 알림)
+// 호스트가 클라이언트에게 선물 전송 (WebSocket push → 클라이언트 로컬 DB 저장)
 export function sendGiftFromHost(targetPlayerId: string, targetCharacterId: number, giftKind: 'item' | 'consumable', data: any, senderName: string, consumableLabel?: string): { success: boolean; message?: string } {
-  if (!handlers) return { success: false, message: '서버 오류' };
-  let result: any;
-  if (giftKind === 'item') {
-    result = handlers['gift:receiveItem']({ characterId: targetCharacterId, item: data });
-    if (result.success) sendGiftNotification(targetPlayerId, senderName, data.name, false);
-  } else {
-    result = handlers['consumable:add']({ characterId: targetCharacterId, type: data.type, quantity: data.quantity });
-    if (result.success) sendGiftNotification(targetPlayerId, senderName, consumableLabel || data.type, true);
+  const target = players.find(p => p.id === targetPlayerId);
+  if (!target || target.ws.readyState !== WebSocket.OPEN) {
+    return { success: false, message: '대상 플레이어를 찾을 수 없습니다.' };
   }
-  return result;
+  if (giftKind === 'item') {
+    target.ws.send(JSON.stringify({ type: 'gift:receiveItem', characterId: targetCharacterId, item: data }));
+    sendGiftNotification(targetPlayerId, senderName, data.name, false);
+  } else {
+    target.ws.send(JSON.stringify({ type: 'consumable:add', characterId: targetCharacterId, consumableType: data.type, quantity: data.quantity }));
+    sendGiftNotification(targetPlayerId, senderName, consumableLabel || data.type, true);
+  }
+  return { success: true };
 }
 
 // 선물 수신 알림을 대상 플레이어에게 전송

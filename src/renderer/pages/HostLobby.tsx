@@ -187,7 +187,7 @@ export function HostLobby({ character, onStartGame, onBack }: Props) {
 
   const handleSendGift = async () => {
     if (!selectedPlayer || (selectedItems.size === 0 && selectedConsumables.size === 0)) return;
-    if (selectedPlayer.characterId === character.id) {
+    if (selectedPlayer.isHost) {
       alert('자기 자신에게는 보낼 수 없습니다.');
       return;
     }

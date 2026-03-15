@@ -11,7 +11,9 @@ export async function initDatabase() {
     ? path.join(process.resourcesPath, 'sql-wasm.wasm')
     : path.join(__dirname, '../../node_modules/sql.js/dist/sql-wasm.wasm');
   const SQL = await initSqlJs({ locateFile: () => wasmPath });
-  dbPath = path.join(app.getPath('userData'), 'bible-game.db');
+  const isMultiMode = process.argv.includes('--multi');
+  const dbName = isMultiMode ? 'bible-game-multi.db' : 'bible-game.db';
+  dbPath = path.join(app.getPath('userData'), dbName);
 
   if (fs.existsSync(dbPath)) {
     const buffer = fs.readFileSync(dbPath);

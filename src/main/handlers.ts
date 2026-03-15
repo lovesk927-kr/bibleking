@@ -705,11 +705,15 @@ export function createHandlers(): HandlerMap {
 
   // 네트워크 선물: 아이템 데이터를 받아서 캐릭터에 추가
   handlers['gift:receiveItem'] = (data: { characterId: number; item: { name: string; description: string; type: string; stat_type: string; stat_bonus: number; rarity: string; level_req: number; enhance_level: number } }) => {
-    run('INSERT INTO items (name, description, type, stat_type, stat_bonus, rarity, level_req) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    const database = getDb();
+    database.run('INSERT INTO items (name, description, type, stat_type, stat_bonus, rarity, level_req) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [data.item.name, data.item.description || '', data.item.type, data.item.stat_type, data.item.stat_bonus, data.item.rarity, data.item.level_req]);
-    const newItem = queryOne('SELECT last_insert_rowid() as id');
-    run('INSERT INTO character_items (character_id, item_id, is_equipped, enhance_level) VALUES (?, ?, 0, ?)',
-      [data.characterId, newItem.id, data.item.enhance_level || 0]);
+    const stmt = database.prepare('SELECT last_insert_rowid() as id');
+    stmt.step();
+    const newItemId = stmt.getAsObject().id;
+    stmt.free();
+    database.run('INSERT INTO character_items (character_id, item_id, is_equipped, enhance_level) VALUES (?, ?, 0, ?)',
+      [data.characterId, newItemId, data.item.enhance_level || 0]);
     saveDb();
     return { success: true };
   };
