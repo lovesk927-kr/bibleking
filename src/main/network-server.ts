@@ -246,6 +246,27 @@ function handleMessage(player: NetworkPlayer, msg: any) {
           return;
         }
 
+        // 네트워크 선물 전송 처리
+        if (channel === 'gift:networkTransferItem') {
+          const { item, targetPlayerId, targetCharacterId } = data;
+          const result = pushGiftToPlayer(targetPlayerId, 'gift:receiveItem', {
+            characterId: targetCharacterId,
+            item,
+          });
+          player.ws.send(JSON.stringify({ type: 'rpc:response', id, result }));
+          return;
+        }
+        if (channel === 'gift:networkTransferConsumable') {
+          const { targetPlayerId, targetCharacterId, type: cType, quantity } = data;
+          const result = pushGiftToPlayer(targetPlayerId, 'consumable:add', {
+            characterId: targetCharacterId,
+            type: cType,
+            quantity,
+          });
+          player.ws.send(JSON.stringify({ type: 'rpc:response', id, result }));
+          return;
+        }
+
         const handler = handlers[channel];
         if (!handler) {
           player.ws.send(JSON.stringify({
@@ -630,6 +651,28 @@ export function pvpEnd(surrenderId?: string) {
     const losingTeam = winningTeam === 'blue' ? 'red' : 'blue';
     finishPvpGame(winningTeam, losingTeam);
   }
+}
+
+// 네트워크 선물: 특정 플레이어에게 아이템/소모품 푸시
+export function pushGiftToPlayer(targetPlayerId: string, giftType: string, data: any): { success: boolean; message?: string } {
+  if (targetPlayerId === 'host') {
+    // 호스트에게는 직접 DB 처리 (handlers를 통해)
+    if (handlers) {
+      return handlers[giftType](data);
+    }
+    return { success: false, message: '핸들러를 찾을 수 없습니다.' };
+  }
+
+  const targetPlayer = players.find(p => p.id === targetPlayerId);
+  if (!targetPlayer || targetPlayer.ws.readyState !== WebSocket.OPEN) {
+    return { success: false, message: '대상 플레이어를 찾을 수 없습니다.' };
+  }
+
+  targetPlayer.ws.send(JSON.stringify({
+    type: giftType,
+    ...data,
+  }));
+  return { success: true };
 }
 
 export function setPvpVerseRange(range: { startVerse: number; endVerse: number }) {

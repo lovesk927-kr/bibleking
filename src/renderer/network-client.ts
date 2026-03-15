@@ -91,6 +91,18 @@ export class NetworkClient {
             case 'pvp:gameOver':
               if (this.onPvpEvent) this.onPvpEvent(msg);
               break;
+            case 'gift:receiveItem':
+              // 다른 플레이어로부터 아이템 수신 → 로컬 DB에 추가
+              if ((window as any).api?.giftReceiveItem) {
+                (window as any).api.giftReceiveItem({ characterId: msg.characterId, item: msg.item });
+              }
+              break;
+            case 'consumable:add':
+              // 다른 플레이어로부터 소모품 수신 → 로컬 DB에 추가
+              if ((window as any).api?.addConsumable) {
+                (window as any).api.addConsumable({ characterId: msg.characterId, type: msg.type, quantity: msg.quantity });
+              }
+              break;
             case 'server:closed':
               this._connected = false;
               if (this.onDisconnect) this.onDisconnect();

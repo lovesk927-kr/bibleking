@@ -680,6 +680,16 @@ export function createHandlers(): HandlerMap {
     return { success: true, message: `${ci.name}을(를) ${toChar.name}에게 전달했습니다!` };
   };
 
+  // 네트워크 선물: 아이템 데이터를 받아서 캐릭터에 추가
+  handlers['gift:receiveItem'] = (data: { characterId: number; item: { name: string; description: string; type: string; stat_type: string; stat_bonus: number; rarity: string; level_req: number; enhance_level: number } }) => {
+    run('INSERT INTO items (name, description, type, stat_type, stat_bonus, rarity, level_req) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [data.item.name, data.item.description || '', data.item.type, data.item.stat_type, data.item.stat_bonus, data.item.rarity, data.item.level_req]);
+    const newItem = queryOne('SELECT last_insert_rowid() as id');
+    run('INSERT INTO character_items (character_id, item_id, is_equipped, enhance_level) VALUES (?, ?, 0, ?)',
+      [data.characterId, newItem.id, data.item.enhance_level || 0]);
+    return { success: true };
+  };
+
   // ===== 소모품 =====
   handlers['consumable:getAll'] = (characterId: number) => {
     return queryAll('SELECT type, quantity FROM consumables WHERE character_id = ? AND quantity > 0', [characterId]);

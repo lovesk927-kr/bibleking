@@ -79,6 +79,11 @@ contextBridge.exposeInMainWorld('api', {
   // 소모품 전송
   consumableTransfer: (data: { fromCharacterId: number; toCharacterId: number; type: string; quantity: number }) => ipcRenderer.invoke('consumable:transfer', data),
 
+  // 네트워크 선물
+  giftReceiveItem: (data: { characterId: number; item: any }) => ipcRenderer.invoke('gift:receiveItem', data),
+  networkGiftItem: (data: { targetPlayerId: string; characterId: number; item: any }) => ipcRenderer.invoke('network:giftItem', data),
+  networkGiftConsumable: (data: { targetPlayerId: string; characterId: number; type: string; quantity: number }) => ipcRenderer.invoke('network:giftConsumable', data),
+
   // DB 초기화
   adminClearDb: () => ipcRenderer.invoke('admin:clearDb'),
 

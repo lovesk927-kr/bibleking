@@ -81,6 +81,11 @@ export function ClientApiProvider({ client, children }: { client: NetworkClient;
     addConsumable: (data) => client.send('consumable:add', data),
     consumableTransfer: (data) => client.send('consumable:transfer', data),
 
+    // 네트워크 선물 (클라이언트에서는 RPC로 처리하므로 더미)
+    giftReceiveItem: (data) => client.send('gift:receiveItem', data),
+    networkGiftItem: () => Promise.resolve({ success: false }),
+    networkGiftConsumable: () => Promise.resolve({ success: false }),
+
     networkSetPlayerTeam: () => Promise.resolve(false),
 
     // 네트워크 (클라이언트에서는 사용 안함 - 더미)

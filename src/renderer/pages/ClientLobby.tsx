@@ -80,8 +80,9 @@ export function ClientLobby({ client, character, onGameStart, onBack }: Props) {
   };
 
   const handleOpenGiftUI = async () => {
-    const items = await api.getItems(character.id);
-    const consumables = await api.getConsumables(character.id);
+    // 로컬 DB에서 아이템/소모품 로드 (네트워크 API가 아닌 로컬 API 사용)
+    const items = await window.api.getItems(character.id);
+    const consumables = await window.api.getConsumables(character.id);
     setMyItems(items.filter((i: Item) => !i.is_equipped));
     setMyConsumables(consumables.filter((c: ConsumableInfo) => c.quantity > 0));
     setSelectedItems(new Set());
@@ -116,13 +117,38 @@ export function ClientLobby({ client, character, onGameStart, onBack }: Props) {
     setSending(true);
     try {
       const errors: string[] = [];
+      // 네트워크 아이템 전송: 아이템 데이터를 호스트에 보내고 로컬에서 삭제
       for (const ciId of selectedItems) {
-        const result = await api.transferItem({ ciId, fromCharacterId: character.id, toCharacterId: selectedPlayer.characterId });
-        if (!result.success) errors.push(result.message || '장비 전송 실패');
+        const item = myItems.find(i => i.ci_id === ciId);
+        if (!item) continue;
+        const targetPlayerId = selectedPlayer.isHost ? 'host' : selectedPlayer.id;
+        const result = await client.send('gift:networkTransferItem', {
+          item: { name: item.name, description: item.description, type: item.type, stat_type: item.stat_type, stat_bonus: item.stat_bonus, rarity: item.rarity, level_req: item.level_req, enhance_level: item.enhance_level },
+          targetPlayerId,
+          targetCharacterId: selectedPlayer.characterId,
+        });
+        if (result.success) {
+          await window.api.discardItem({ ciId, characterId: character.id });
+        } else {
+          errors.push(result.message || '장비 전송 실패');
+        }
       }
+      // 네트워크 소모품 전송
       for (const type of selectedConsumables) {
-        const result = await api.consumableTransfer({ fromCharacterId: character.id, toCharacterId: selectedPlayer.characterId, type, quantity: 1 });
-        if (!result.success) errors.push(result.message || '소모품 전송 실패');
+        const c = myConsumables.find(c => c.type === type);
+        if (!c) continue;
+        const targetPlayerId = selectedPlayer.isHost ? 'host' : selectedPlayer.id;
+        const result = await client.send('gift:networkTransferConsumable', {
+          targetPlayerId,
+          targetCharacterId: selectedPlayer.characterId,
+          type,
+          quantity: 1,
+        });
+        if (result.success) {
+          await window.api.useConsumable({ characterId: character.id, type });
+        } else {
+          errors.push(result.message || '소모품 전송 실패');
+        }
       }
       if (errors.length > 0) {
         alert('일부 전송 실패:\n' + errors.join('\n'));

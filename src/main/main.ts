@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { initDatabase } from './db';
 import { createHandlers } from './handlers';
-import { startServer, stopServer, isServerRunning, getLocalIP, setHostPlayer, getServerPlayers, setRoomMode, getRoomInfo, broadcastGameStart, GameMode, setHostEventSender, pvpReady, pvpAttack, pvpEnd, setPvpVerseRange, getPvpVerseRange, setPvpEasyMode, setPlayerTeam } from './network-server';
+import { startServer, stopServer, isServerRunning, getLocalIP, setHostPlayer, getServerPlayers, setRoomMode, getRoomInfo, broadcastGameStart, GameMode, setHostEventSender, pvpReady, pvpAttack, pvpEnd, setPvpVerseRange, getPvpVerseRange, setPvpEasyMode, setPlayerTeam, pushGiftToPlayer } from './network-server';
 
 // 앱 이름 고정 (실행 방식에 관계없이 동일한 userData 경로 사용)
 app.setName('bible-game');
@@ -183,6 +183,22 @@ function registerIpcHandlers() {
   ipcMain.handle('network:startGame', () => {
     broadcastGameStart();
     return true;
+  });
+
+  // 네트워크 선물 (호스트 → 클라이언트)
+  ipcMain.handle('network:giftItem', (_event, data: { targetPlayerId: string; characterId: number; item: any }) => {
+    return pushGiftToPlayer(data.targetPlayerId, 'gift:receiveItem', {
+      characterId: data.characterId,
+      item: data.item,
+    });
+  });
+
+  ipcMain.handle('network:giftConsumable', (_event, data: { targetPlayerId: string; characterId: number; type: string; quantity: number }) => {
+    return pushGiftToPlayer(data.targetPlayerId, 'consumable:add', {
+      characterId: data.characterId,
+      type: data.type,
+      quantity: data.quantity,
+    });
   });
 
   ipcMain.handle('network:getRoomInfo', () => {

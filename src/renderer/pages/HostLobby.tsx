@@ -189,17 +189,35 @@ export function HostLobby({ character, onStartGame, onBack }: Props) {
     setSending(true);
     try {
       const errors: string[] = [];
-      // 장비 아이템 전송
+      // 장비 아이템 전송: 클라이언트 플레이어에게 네트워크로 전송
       for (const ciId of selectedItems) {
-        const result = await api.transferItem({ ciId, fromCharacterId: character.id, toCharacterId: selectedPlayer.characterId });
-        if (!result.success) errors.push(result.message || '장비 전송 실패');
+        const item = myItems.find(i => i.ci_id === ciId);
+        if (!item) continue;
+        const result = await window.api.networkGiftItem({
+          targetPlayerId: selectedPlayer.id,
+          characterId: selectedPlayer.characterId,
+          item: { name: item.name, description: item.description, type: item.type, stat_type: item.stat_type, stat_bonus: item.stat_bonus, rarity: item.rarity, level_req: item.level_req, enhance_level: item.enhance_level },
+        });
+        if (result.success) {
+          await api.discardItem({ ciId, characterId: character.id });
+        } else {
+          errors.push(result.message || '장비 전송 실패');
+        }
       }
       // 소모품 전송
       for (const type of selectedConsumables) {
         const c = myConsumables.find(c => c.type === type);
-        if (c) {
-          const result = await api.consumableTransfer({ fromCharacterId: character.id, toCharacterId: selectedPlayer.characterId, type, quantity: 1 });
-          if (!result.success) errors.push(result.message || '소모품 전송 실패');
+        if (!c) continue;
+        const result = await window.api.networkGiftConsumable({
+          targetPlayerId: selectedPlayer.id,
+          characterId: selectedPlayer.characterId,
+          type,
+          quantity: 1,
+        });
+        if (result.success) {
+          await api.useConsumable({ characterId: character.id, type });
+        } else {
+          errors.push(result.message || '소모품 전송 실패');
         }
       }
       if (errors.length > 0) {
