@@ -104,6 +104,8 @@ export function ClientApiProvider({ client, children }: { client: NetworkClient;
     networkPvpEnd: () => Promise.resolve(false),
     onPvpEvent: () => {},
     removePvpListener: () => {},
+    onGiftNotification: () => {},
+    removeGiftNotificationListener: () => {},
 
     // 파일 내보내기/가져오기 (클라이언트에서는 사용 안함 - 더미)
     exportVerses: () => Promise.resolve({ success: false, error: 'Client mode' }),

@@ -710,6 +710,7 @@ export function createHandlers(): HandlerMap {
     const newItem = queryOne('SELECT last_insert_rowid() as id');
     run('INSERT INTO character_items (character_id, item_id, is_equipped, enhance_level) VALUES (?, ?, 0, ?)',
       [data.characterId, newItem.id, data.item.enhance_level || 0]);
+    saveDb();
     return { success: true };
   };
 
@@ -751,6 +752,7 @@ export function createHandlers(): HandlerMap {
     } else {
       run('INSERT INTO consumables (character_id, type, quantity) VALUES (?, ?, ?)', [data.characterId, data.type, data.quantity]);
     }
+    saveDb();
     return { success: true };
   };
 

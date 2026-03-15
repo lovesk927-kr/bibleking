@@ -86,9 +86,9 @@ export function ClientLobby({ client, character, onGameStart, onBack }: Props) {
   };
 
   const handleOpenGiftUI = async () => {
-    // 로컬 DB에서 아이템/소모품 로드 (네트워크 API가 아닌 로컬 API 사용)
-    const items = await window.api.getItems(character.id);
-    const consumables = await window.api.getConsumables(character.id);
+    // 네트워크 API를 통해 호스트 DB에서 아이템/소모품 로드
+    const items = await api.getItems(character.id);
+    const consumables = await api.getConsumables(character.id);
     setMyItems(items.filter((i: Item) => !i.is_equipped));
     setMyConsumables(consumables.filter((c: ConsumableInfo) => c.quantity > 0));
     setSelectedItems(new Set());
@@ -135,7 +135,7 @@ export function ClientLobby({ client, character, onGameStart, onBack }: Props) {
           senderName: character.name,
         });
         if (result.success) {
-          await window.api.discardItem({ ciId, characterId: character.id });
+          await api.discardItem({ ciId, characterId: character.id });
         } else {
           errors.push(result.message || '장비 전송 실패');
         }
@@ -154,7 +154,7 @@ export function ClientLobby({ client, character, onGameStart, onBack }: Props) {
           consumableLabel: CONSUMABLE_LABELS[type] || type,
         });
         if (result.success) {
-          await window.api.useConsumable({ characterId: character.id, type });
+          await api.useConsumable({ characterId: character.id, type });
         } else {
           errors.push(result.message || '소모품 전송 실패');
         }
