@@ -246,23 +246,30 @@ function handleMessage(player: NetworkPlayer, msg: any) {
           return;
         }
 
-        // 네트워크 선물 전송 처리
+        // 네트워크 선물 전송: 호스트 DB에 직접 생성 + 수신자에게 알림 push
         if (channel === 'gift:networkTransferItem') {
-          const { item, targetPlayerId, targetCharacterId } = data;
-          const result = pushGiftToPlayer(targetPlayerId, 'gift:receiveItem', {
-            characterId: targetCharacterId,
-            item,
-          });
+          const { item, targetPlayerId, targetCharacterId, senderName } = data;
+          if (!handlers) {
+            player.ws.send(JSON.stringify({ type: 'rpc:response', id, result: { success: false, message: '서버 오류' } }));
+            return;
+          }
+          const result = handlers['gift:receiveItem']({ characterId: targetCharacterId, item });
+          if (result.success) {
+            sendGiftNotification(targetPlayerId, senderName, item.name, false);
+          }
           player.ws.send(JSON.stringify({ type: 'rpc:response', id, result }));
           return;
         }
         if (channel === 'gift:networkTransferConsumable') {
-          const { targetPlayerId, targetCharacterId, type: cType, quantity } = data;
-          const result = pushGiftToPlayer(targetPlayerId, 'consumable:add', {
-            characterId: targetCharacterId,
-            type: cType,
-            quantity,
-          });
+          const { targetPlayerId, targetCharacterId, type: cType, quantity, senderName, consumableLabel } = data;
+          if (!handlers) {
+            player.ws.send(JSON.stringify({ type: 'rpc:response', id, result: { success: false, message: '서버 오류' } }));
+            return;
+          }
+          const result = handlers['consumable:add']({ characterId: targetCharacterId, type: cType, quantity });
+          if (result.success) {
+            sendGiftNotification(targetPlayerId, senderName, consumableLabel || cType, true);
+          }
           player.ws.send(JSON.stringify({ type: 'rpc:response', id, result }));
           return;
         }
@@ -653,26 +660,31 @@ export function pvpEnd(surrenderId?: string) {
   }
 }
 
-// 네트워크 선물: 특정 플레이어에게 아이템/소모품 푸시
-export function pushGiftToPlayer(targetPlayerId: string, giftType: string, data: any): { success: boolean; message?: string } {
+// 호스트가 클라이언트에게 선물 전송 (DB 직접 저장 + 알림)
+export function sendGiftFromHost(targetPlayerId: string, targetCharacterId: number, giftKind: 'item' | 'consumable', data: any, senderName: string, consumableLabel?: string): { success: boolean; message?: string } {
+  if (!handlers) return { success: false, message: '서버 오류' };
+  let result: any;
+  if (giftKind === 'item') {
+    result = handlers['gift:receiveItem']({ characterId: targetCharacterId, item: data });
+    if (result.success) sendGiftNotification(targetPlayerId, senderName, data.name, false);
+  } else {
+    result = handlers['consumable:add']({ characterId: targetCharacterId, type: data.type, quantity: data.quantity });
+    if (result.success) sendGiftNotification(targetPlayerId, senderName, consumableLabel || data.type, true);
+  }
+  return result;
+}
+
+// 선물 수신 알림을 대상 플레이어에게 전송
+function sendGiftNotification(targetPlayerId: string, senderName: string, itemName: string, isConsumable: boolean) {
+  const msg = { type: 'gift:notification', senderName, itemName, isConsumable };
   if (targetPlayerId === 'host') {
-    // 호스트에게는 직접 DB 처리 (handlers를 통해)
-    if (handlers) {
-      return handlers[giftType](data);
-    }
-    return { success: false, message: '핸들러를 찾을 수 없습니다.' };
+    if (hostEventSender) hostEventSender(msg);
+    return;
   }
-
-  const targetPlayer = players.find(p => p.id === targetPlayerId);
-  if (!targetPlayer || targetPlayer.ws.readyState !== WebSocket.OPEN) {
-    return { success: false, message: '대상 플레이어를 찾을 수 없습니다.' };
+  const target = players.find(p => p.id === targetPlayerId);
+  if (target && target.ws.readyState === WebSocket.OPEN) {
+    try { target.ws.send(JSON.stringify(msg)); } catch (e) { /* ignore */ }
   }
-
-  targetPlayer.ws.send(JSON.stringify({
-    type: giftType,
-    ...data,
-  }));
-  return { success: true };
 }
 
 export function setPvpVerseRange(range: { startVerse: number; endVerse: number }) {

@@ -62,6 +62,12 @@ contextBridge.exposeInMainWorld('api', {
   removePvpListener: () => {
     ipcRenderer.removeAllListeners('pvp:event');
   },
+  onGiftNotification: (callback: (event: any, data: { senderName: string; itemName: string; isConsumable: boolean }) => void) => {
+    ipcRenderer.on('gift:notification', callback);
+  },
+  removeGiftNotificationListener: () => {
+    ipcRenderer.removeAllListeners('gift:notification');
+  },
 
   // 업데이트
   onUpdateStatus: (callback: (event: any, data: any) => void) => {

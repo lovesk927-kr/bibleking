@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { initDatabase } from './db';
 import { createHandlers } from './handlers';
-import { startServer, stopServer, isServerRunning, getLocalIP, setHostPlayer, getServerPlayers, setRoomMode, getRoomInfo, broadcastGameStart, GameMode, setHostEventSender, pvpReady, pvpAttack, pvpEnd, setPvpVerseRange, getPvpVerseRange, setPvpEasyMode, setPlayerTeam, pushGiftToPlayer } from './network-server';
+import { startServer, stopServer, isServerRunning, getLocalIP, setHostPlayer, getServerPlayers, setRoomMode, getRoomInfo, broadcastGameStart, GameMode, setHostEventSender, pvpReady, pvpAttack, pvpEnd, setPvpVerseRange, getPvpVerseRange, setPvpEasyMode, setPlayerTeam, sendGiftFromHost } from './network-server';
 
 // 앱 이름 고정 (실행 방식에 관계없이 동일한 userData 경로 사용)
 app.setName('bible-game');
@@ -44,9 +44,13 @@ function createWindow() {
   });
   mainWindow.setMenuBarVisibility(false);
 
-  // Set up host event sender for PvP push events
+  // Set up host event sender for PvP push events and gift notifications
   setHostEventSender((msg: any) => {
-    mainWindow?.webContents.send('pvp:event', msg);
+    if (msg.type === 'gift:notification') {
+      mainWindow?.webContents.send('gift:notification', msg);
+    } else {
+      mainWindow?.webContents.send('pvp:event', msg);
+    }
   });
 
   if (process.env.NODE_ENV === 'development') {
@@ -185,20 +189,13 @@ function registerIpcHandlers() {
     return true;
   });
 
-  // 네트워크 선물 (호스트 → 클라이언트)
-  ipcMain.handle('network:giftItem', (_event, data: { targetPlayerId: string; characterId: number; item: any }) => {
-    return pushGiftToPlayer(data.targetPlayerId, 'gift:receiveItem', {
-      characterId: data.characterId,
-      item: data.item,
-    });
+  // 네트워크 선물 (호스트 → 클라이언트): 호스트 DB에 직접 저장 + 알림
+  ipcMain.handle('network:giftItem', (_event, data: { targetPlayerId: string; characterId: number; item: any; senderName: string }) => {
+    return sendGiftFromHost(data.targetPlayerId, data.characterId, 'item', data.item, data.senderName);
   });
 
-  ipcMain.handle('network:giftConsumable', (_event, data: { targetPlayerId: string; characterId: number; type: string; quantity: number }) => {
-    return pushGiftToPlayer(data.targetPlayerId, 'consumable:add', {
-      characterId: data.characterId,
-      type: data.type,
-      quantity: data.quantity,
-    });
+  ipcMain.handle('network:giftConsumable', (_event, data: { targetPlayerId: string; characterId: number; type: string; quantity: number; senderName: string; consumableLabel: string }) => {
+    return sendGiftFromHost(data.targetPlayerId, data.characterId, 'consumable', { type: data.type, quantity: data.quantity }, data.senderName, data.consumableLabel);
   });
 
   ipcMain.handle('network:getRoomInfo', () => {

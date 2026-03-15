@@ -4,6 +4,7 @@ type LobbyUpdateCallback = (players: NetworkPlayerInfo[], mode?: string) => void
 type DisconnectCallback = () => void;
 type GameStartCallback = (mode: string) => void;
 type PvpEventCallback = (data: any) => void;
+type GiftNotificationCallback = (senderName: string, itemName: string, isConsumable: boolean) => void;
 
 export interface NetworkPlayerInfo {
   id: string;
@@ -23,6 +24,7 @@ export class NetworkClient {
   private onDisconnect: DisconnectCallback | null = null;
   private onGameStart: GameStartCallback | null = null;
   private onPvpEvent: PvpEventCallback | null = null;
+  private onGiftNotification: GiftNotificationCallback | null = null;
   private playerId: string = '';
   private _connected = false;
 
@@ -33,6 +35,7 @@ export class NetworkClient {
   setOnDisconnect(cb: DisconnectCallback) { this.onDisconnect = cb; }
   setOnGameStart(cb: GameStartCallback) { this.onGameStart = cb; }
   setOnPvpEvent(cb: PvpEventCallback) { this.onPvpEvent = cb; }
+  setOnGiftNotification(cb: GiftNotificationCallback) { this.onGiftNotification = cb; }
 
   connect(host: string, port: number): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -91,16 +94,10 @@ export class NetworkClient {
             case 'pvp:gameOver':
               if (this.onPvpEvent) this.onPvpEvent(msg);
               break;
-            case 'gift:receiveItem':
-              // 다른 플레이어로부터 아이템 수신 → 로컬 DB에 추가
-              if ((window as any).api?.giftReceiveItem) {
-                (window as any).api.giftReceiveItem({ characterId: msg.characterId, item: msg.item });
-              }
-              break;
-            case 'consumable:add':
-              // 다른 플레이어로부터 소모품 수신 → 로컬 DB에 추가
-              if ((window as any).api?.addConsumable) {
-                (window as any).api.addConsumable({ characterId: msg.characterId, type: msg.type, quantity: msg.quantity });
+            case 'gift:notification':
+              // 다른 플레이어로부터 선물 수신 알림 (DB는 호스트에서 직접 처리됨)
+              if (this.onGiftNotification) {
+                this.onGiftNotification(msg.senderName, msg.itemName, msg.isConsumable);
               }
               break;
             case 'server:closed':

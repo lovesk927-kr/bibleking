@@ -48,8 +48,13 @@ export function HostLobby({ character, onStartGame, onBack }: Props) {
   useEffect(() => {
     startHosting();
     loadVerseNumbers();
+    window.api.onGiftNotification((_event: any, data: { senderName: string; itemName: string; isConsumable: boolean }) => {
+      const label = data.isConsumable ? '소모품' : '장비';
+      alert(`${data.senderName}님이 ${label} [${data.itemName}]을(를) 보냈습니다!`);
+    });
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
+      window.api.removeGiftNotificationListener();
     };
   }, []);
 
@@ -197,6 +202,7 @@ export function HostLobby({ character, onStartGame, onBack }: Props) {
           targetPlayerId: selectedPlayer.id,
           characterId: selectedPlayer.characterId,
           item: { name: item.name, description: item.description, type: item.type, stat_type: item.stat_type, stat_bonus: item.stat_bonus, rarity: item.rarity, level_req: item.level_req, enhance_level: item.enhance_level },
+          senderName: character.name,
         });
         if (result.success) {
           await api.discardItem({ ciId, characterId: character.id });
@@ -213,6 +219,8 @@ export function HostLobby({ character, onStartGame, onBack }: Props) {
           characterId: selectedPlayer.characterId,
           type,
           quantity: 1,
+          senderName: character.name,
+          consumableLabel: CONSUMABLE_LABELS[type] || type,
         });
         if (result.success) {
           await api.useConsumable({ characterId: character.id, type });

@@ -145,6 +145,8 @@ declare global {
       networkPvpEnd: () => Promise<boolean>;
       onPvpEvent: (callback: (event: any, data: any) => void) => void;
       removePvpListener: () => void;
+      onGiftNotification: (callback: (event: any, data: { senderName: string; itemName: string; isConsumable: boolean }) => void) => void;
+      removeGiftNotificationListener: () => void;
       // 파일 내보내기/가져오기
       exportVerses: () => Promise<{ success: boolean; path?: string; error?: string }>;
       importVerses: () => Promise<{ success: boolean; error?: string }>;

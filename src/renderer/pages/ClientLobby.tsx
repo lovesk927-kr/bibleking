@@ -56,6 +56,11 @@ export function ClientLobby({ client, character, onGameStart, onBack }: Props) {
       setDisconnected(true);
     });
 
+    client.setOnGiftNotification((senderName, itemName, isConsumable) => {
+      const label = isConsumable ? '소모품' : '장비';
+      alert(`${senderName}님이 ${label} [${itemName}]을(를) 보냈습니다!`);
+    });
+
     client.selectCharacter(character.id, character.name, character.character_type, character.level);
     client.requestPlayers();
 
@@ -63,6 +68,7 @@ export function ClientLobby({ client, character, onGameStart, onBack }: Props) {
       client.setOnLobbyUpdate(() => {});
       client.setOnDisconnect(() => {});
       client.setOnGameStart(() => {});
+      client.setOnGiftNotification(() => {});
     };
   }, []);
 
@@ -126,6 +132,7 @@ export function ClientLobby({ client, character, onGameStart, onBack }: Props) {
           item: { name: item.name, description: item.description, type: item.type, stat_type: item.stat_type, stat_bonus: item.stat_bonus, rarity: item.rarity, level_req: item.level_req, enhance_level: item.enhance_level },
           targetPlayerId,
           targetCharacterId: selectedPlayer.characterId,
+          senderName: character.name,
         });
         if (result.success) {
           await window.api.discardItem({ ciId, characterId: character.id });
@@ -143,6 +150,8 @@ export function ClientLobby({ client, character, onGameStart, onBack }: Props) {
           targetCharacterId: selectedPlayer.characterId,
           type,
           quantity: 1,
+          senderName: character.name,
+          consumableLabel: CONSUMABLE_LABELS[type] || type,
         });
         if (result.success) {
           await window.api.useConsumable({ characterId: character.id, type });
