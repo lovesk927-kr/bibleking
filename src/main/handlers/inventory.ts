@@ -77,8 +77,9 @@ export function createInventoryHandlers(): HandlerMap {
       [firstName, desc, itemInfos[0].type, statType, newStatBonus, newRarity, maxLevel]);
     const newItem = queryOne('SELECT id FROM items ORDER BY id DESC LIMIT 1');
     run('INSERT INTO character_items (character_id, item_id, is_equipped, enhance_level) VALUES (?, ?, 0, 0)', [data.characterId, newItem.id]);
+    const newCi = queryOne('SELECT ci.id as ci_id, i.*, ci.is_equipped, ci.enhance_level FROM character_items ci JOIN items i ON ci.item_id = i.id WHERE ci.id = (SELECT MAX(id) FROM character_items)');
 
-    return { success: true, message: `합성 성공! ${firstName} [${RARITY_KOR[newRarity]}]` };
+    return { success: true, message: `합성 성공! ${firstName} [${RARITY_KOR[newRarity]}]`, newItem: newCi };
   };
 
   handlers['inventory:enhance'] = (data: { characterId: number; targetCiId: number; materialCiId: number }) => {

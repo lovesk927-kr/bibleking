@@ -20,6 +20,9 @@ export function TrainingMode({ character, onBack }: Props) {
   const correctBlanksRef = useRef<Record<number, string[]>>({});
   const blankOrderRef = useRef<{ verseNumber: number; blankIndex: number }[]>([]);
   const autoMoveTimerRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const lastFocusRef = useRef<string | null>(null);
+  const lastCursorPos = useRef<number>(0);
+  const lastVerseRef = useRef<number | null>(null);
 
   const isBlankMode = character.recite_mode === 1;
 
@@ -49,7 +52,10 @@ export function TrainingMode({ character, onBack }: Props) {
         el?.focus();
       }
     };
-    setTimeout(focusFirst, 100);
+    // 윈도우 포커스 복구 후 입력칸 포커스 (IME 한글 유지)
+    window.api?.focusWindow?.().then(() => {
+      setTimeout(focusFirst, 50);
+    });
     window.addEventListener('focus', focusFirst);
     return () => window.removeEventListener('focus', focusFirst);
   }, [loading]);
@@ -59,6 +65,11 @@ export function TrainingMode({ character, onBack }: Props) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'F5') {
         e.preventDefault();
+        // 현재 커서 위치 저장
+        const active = document.activeElement as HTMLInputElement | HTMLTextAreaElement | null;
+        if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {
+          lastCursorPos.current = active.selectionStart || 0;
+        }
         setShowAnswers(true);
       }
       if (e.key === 'F9') {
@@ -70,6 +81,23 @@ export function TrainingMode({ character, onBack }: Props) {
       if (e.key === 'F5') {
         e.preventDefault();
         setShowAnswers(false);
+        // 정답 보기 해제 후 마지막 포커스 위치 + 커서 위치 복구
+        const restoreFocus = () => {
+          let target: HTMLInputElement | HTMLTextAreaElement | null = null;
+          if (isBlankMode && lastFocusRef.current) {
+            target = blankRefs.current[lastFocusRef.current] || null;
+          } else if (lastVerseRef.current !== null) {
+            target = document.querySelector<HTMLTextAreaElement>(`textarea[data-verse="${lastVerseRef.current}"]`);
+          }
+          if (target) {
+            target.focus();
+            const pos = lastCursorPos.current;
+            target.setSelectionRange(pos, pos);
+          }
+        };
+        window.api?.focusWindow?.().then(() => {
+          setTimeout(restoreFocus, 50);
+        });
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -81,6 +109,42 @@ export function TrainingMode({ character, onBack }: Props) {
   }, [verses, answers, blankAnswers]);
 
   const normalize = (s: string) => s.replace(/[\s,.!?;:'"''""·\u3000]/g, '');
+
+  // 첫 번째 틀린 위치를 찾아 하이라이트된 JSX 반환
+  const renderDiff = (userText: string, correctText: string) => {
+    const elements: React.ReactNode[] = [];
+    let firstWrongIdx = -1;
+
+    for (let i = 0; i < correctText.length; i++) {
+      if (i < userText.length && userText[i] === correctText[i]) {
+        elements.push(<span key={i} className="diff-correct">{correctText[i]}</span>);
+      } else {
+        firstWrongIdx = i;
+        // 틀린 글자 표시
+        elements.push(<span key={i} className="diff-wrong">{correctText[i]}</span>);
+        // 나머지는 회색으로
+        if (i + 1 < correctText.length) {
+          elements.push(<span key="rest" className="diff-rest">{correctText.slice(i + 1)}</span>);
+        }
+        break;
+      }
+    }
+
+    // 사용자가 더 많이 쓴 경우 (정답보다 긴 입력)
+    if (firstWrongIdx === -1 && userText.length > correctText.length) {
+      // 모두 맞지만 추가 글자가 있음 - 이 경우는 채점에서 이미 처리
+    }
+
+    // 사용자 입력이 짧아서 아직 못 쓴 경우
+    if (firstWrongIdx === -1 && userText.length < correctText.length) {
+      elements.push(<span key="missing" className="diff-wrong">{correctText[userText.length]}</span>);
+      if (userText.length + 1 < correctText.length) {
+        elements.push(<span key="rest" className="diff-rest">{correctText.slice(userText.length + 1)}</span>);
+      }
+    }
+
+    return elements;
+  };
 
   const doGrade = () => {
     const result: Record<string, boolean> = {};
@@ -217,23 +281,32 @@ export function TrainingMode({ character, onBack }: Props) {
           const gradeKey = `blank-${v.verse_number}-${blankIdx}`;
           const isGradedCorrect = graded && gradeResult[gradeKey] === true;
           const isGradedWrong = graded && gradeResult[gradeKey] === false && (blanks[blankIdx] || '').length > 0;
+          const isGradedEmpty = graded && gradeResult[gradeKey] === false && !(blanks[blankIdx] || '').length;
           elements.push(
-            <input
-              key={`b-${blankIdx}`}
-              ref={(el) => setBlankRef(v.verse_number, blankIdx, el)}
-              type="text"
-              className={`blank-input ${isGradedCorrect ? 'blank-correct' : ''} ${isGradedWrong ? 'blank-wrong' : ''}`}
-              value={blanks[blankIdx] || ''}
-              onChange={(e) => {
-                handleBlankChange(v.verse_number, blankIdx, e.target.value);
-                checkAndAutoMove(v.verse_number, blankIdx);
-              }}
-              onCompositionEnd={() => {
-                setTimeout(() => checkAndAutoMove(v.verse_number, blankIdx), 30);
-              }}
-              placeholder="___"
-              style={{ width: `${Math.max(3, (correct[blankIdx]?.length || 2)) * 18 + 16}px` }}
-            />
+            <span key={`b-${blankIdx}`} className="blank-wrapper">
+              <input
+                ref={(el) => setBlankRef(v.verse_number, blankIdx, el)}
+                type="text"
+                lang="ko"
+                className={`blank-input ${isGradedCorrect ? 'blank-correct' : ''} ${isGradedWrong || isGradedEmpty ? 'blank-wrong' : ''}`}
+                value={blanks[blankIdx] || ''}
+                onChange={(e) => {
+                  handleBlankChange(v.verse_number, blankIdx, e.target.value);
+                  checkAndAutoMove(v.verse_number, blankIdx);
+                }}
+                onFocus={() => { lastFocusRef.current = `${v.verse_number}-${blankIdx}`; }}
+                onCompositionEnd={() => {
+                  setTimeout(() => checkAndAutoMove(v.verse_number, blankIdx), 30);
+                }}
+                placeholder="___"
+                style={{ width: `${Math.max(3, (correct[blankIdx]?.length || 2)) * 18 + 16}px` }}
+              />
+              {(isGradedWrong || isGradedEmpty) && (
+                <span className="blank-correct-answer">
+                  {renderDiff(blanks[blankIdx] || '', correct[blankIdx])}
+                </span>
+              )}
+            </span>
           );
         }
       }
@@ -289,13 +362,24 @@ export function TrainingMode({ character, onBack }: Props) {
                     {showAnswers ? (
                       <div className="training-full-answer">{v.content}</div>
                     ) : (
-                      <textarea
-                        className={`verse-input ${isVerseCorrect ? 'verse-correct' : ''} ${isVerseWrong ? 'verse-wrong' : ''}`}
-                        value={answers[v.verse_number] || ''}
-                        onChange={(e) => handleChange(v.verse_number, e.target.value)}
-                        placeholder="이 절의 내용을 암송하세요..."
-                        rows={2}
-                      />
+                      <>
+                        <textarea
+                          className={`verse-input ${isVerseCorrect ? 'verse-correct' : ''} ${isVerseWrong ? 'verse-wrong' : ''}`}
+                          data-verse={v.verse_number}
+                          lang="ko"
+                          value={answers[v.verse_number] || ''}
+                          onChange={(e) => handleChange(v.verse_number, e.target.value)}
+                          onFocus={() => { lastVerseRef.current = v.verse_number; }}
+                          placeholder="이 절의 내용을 암송하세요..."
+                          rows={2}
+                        />
+                        {isVerseWrong && (
+                          <div className="verse-correct-answer">
+                            <span className="verse-correct-label">정답: </span>
+                            {renderDiff(answers[v.verse_number] || '', v.content)}
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 )}

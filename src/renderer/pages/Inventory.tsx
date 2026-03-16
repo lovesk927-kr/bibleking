@@ -172,13 +172,12 @@ export function Inventory({ character, onBack }: Props) {
     setPrevItem({ ...targetItem });
     const ciIds = [targetItem.ci_id, materials[0].ci_id, materials[1].ci_id];
     const result = await api.synthesizeItem({ characterId: character.id, ciIds });
-    setResultMessage(result.message);
+    setResultMessage(result.message || '');
     setResultSuccess(result.success !== false);
     await loadItems();
-    const newItems = await api.getItems(character.id);
-    setItems(newItems);
-    const newItem = newItems.find((i: Item) => i.name === targetItem.name && i.rarity !== targetItem.rarity);
-    if (newItem) setTargetItem(newItem);
+    if (result.success && result.newItem) {
+      setTargetItem(result.newItem);
+    }
   };
 
   const goBackToList = () => {
