@@ -131,6 +131,15 @@ function registerIpcHandlers() {
     ipcMain.handle(channel, (_event, data) => handler(data));
   }
 
+  // ===== 윈도우 포커스 강제 복구 =====
+  ipcMain.handle('window:focus', () => {
+    if (mainWindow) {
+      mainWindow.blur();
+      mainWindow.focus();
+      mainWindow.webContents.focus();
+    }
+  });
+
   // ===== 네트워크 관련 IPC =====
   ipcMain.handle('network:startServer', (_event, port: number) => {
     try {

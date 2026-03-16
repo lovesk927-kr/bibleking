@@ -108,6 +108,9 @@ contextBridge.exposeInMainWorld('api', {
   // PvP 전적
   getPvpRecord: (characterName: string) => ipcRenderer.invoke('pvp:getRecord', characterName),
 
+  // 윈도우 포커스
+  focusWindow: () => ipcRenderer.invoke('window:focus'),
+
   // 디버그
   debugSetLevel: (data: { characterId: number; level: number; expPercent: number }) => ipcRenderer.invoke('debug:setLevel', data),
   debugResetBoss: (characterId: number) => ipcRenderer.invoke('debug:resetBoss', characterId),
