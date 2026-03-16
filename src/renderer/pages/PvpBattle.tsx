@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import type { Character, Verse } from '../types';
 import { CHARACTER_INFO } from '../constants';
+import { useInputFocus } from '../hooks';
 import { NetworkClient } from '../network-client';
 
 interface Props {
@@ -70,7 +71,7 @@ export function PvpBattle({ character, isHost, client, onEnd }: Props) {
   const myIdRef = useRef(isHost ? 'host' : (client?.id || ''));
   const versesRef = useRef<Verse[]>([]);
   const phaseRef = useRef<PvpPhase>('waiting');
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [inputRef, inputHandlers] = useInputFocus([phase, questionNum, answered]);
 
   const timerDuration = easyMode ? 40 : 15;
   const maxSkips = easyMode ? 7 : 5;
@@ -229,24 +230,6 @@ export function PvpBattle({ character, isHost, client, onEnd }: Props) {
 
   const isDead = myHp <= 0;
 
-  // Auto-focus: 새 문제, 공격 애니메이션 종료, phase 변경 시 포커스 복구
-  useEffect(() => {
-    if (phase === 'playing' && !answered && !isDead) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
-  }, [phase, questionNum, answered, attackAnim]);
-
-  // 창 포커스 복귀 시 input 포커스 복구
-  useEffect(() => {
-    const onWindowFocus = () => {
-      if (phaseRef.current === 'playing' && inputRef.current) {
-        inputRef.current.focus();
-      }
-    };
-    window.addEventListener('focus', onWindowFocus);
-    return () => window.removeEventListener('focus', onWindowFocus);
-  }, []);
-
   const handleSubmitAnswer = () => {
     if (answered || !currentQuestion || isDead) return;
     const normalize = (s: string) => s.replace(/[\s,.!?;:'"''""·\u3000]/g, '');
@@ -263,7 +246,7 @@ export function PvpBattle({ character, isHost, client, onEnd }: Props) {
         if (phaseRef.current === 'playing') {
           setAnswerInput('');
           nextQuestion();
-          setTimeout(() => inputRef.current?.focus(), 100);
+          // 포커스는 useInputFocus 훅이 처리
         }
       }, 1200);
     } else {
@@ -496,8 +479,8 @@ export function PvpBattle({ character, isHost, client, onEnd }: Props) {
                 value={answerInput}
                 onChange={e => setAnswerInput(e.target.value)}
                 onKeyDown={handleKeyDown}
+                {...inputHandlers}
                 placeholder="빈칸에 들어갈 단어를 입력하세요"
-                autoFocus
                 disabled={answered}
               />
               <button className="btn btn-primary pvp-submit-btn" onClick={handleSubmitAnswer} disabled={answered || !answerInput.trim()}>

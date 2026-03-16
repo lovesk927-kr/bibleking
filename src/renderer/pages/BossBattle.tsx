@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { Character, BossBattleState, BlankQuestion, BossBattleResult, Item } from '../types';
 import { getBossForVillage, CHARACTER_INFO } from '../constants';
+import { useInputFocus } from '../hooks';
 
 interface Props {
   character: Character;
@@ -27,7 +28,7 @@ export function BossBattle({ character, villageId, onComplete, onBack }: Props) 
   const [defeatLine, setDefeatLine] = useState('');
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [inputRef, inputHandlers] = useInputFocus([phase, round, answered]);
   const phaseRef = useRef<Phase>('intro');
   const logEndRef = useRef<HTMLDivElement>(null);
 
@@ -63,7 +64,6 @@ export function BossBattle({ character, villageId, onComplete, onBack }: Props) 
       setAnswerInput('');
       setTimer(timerDuration);
       setRound(prev => prev + 1);
-      setTimeout(() => inputRef.current?.focus(), 100);
     }
   };
 
@@ -90,13 +90,6 @@ export function BossBattle({ character, villageId, onComplete, onBack }: Props) 
   useEffect(() => {
     logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [log]);
-
-  // 포커스 관리
-  useEffect(() => {
-    if (phase === 'playing' && !answered) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
-  }, [phase, round, answered]);
 
   const handleAnswer = async (correct: boolean) => {
     if (answered || !battleState) return;
@@ -320,8 +313,8 @@ export function BossBattle({ character, villageId, onComplete, onBack }: Props) 
                 value={answerInput}
                 onChange={e => setAnswerInput(e.target.value)}
                 onKeyDown={handleKeyDown}
+                {...inputHandlers}
                 placeholder="빈칸에 들어갈 단어를 입력하세요"
-                autoFocus
                 disabled={answered}
               />
               <button className="btn btn-primary boss-submit-btn" onClick={handleSubmitAnswer} disabled={answered || !answerInput.trim()}>

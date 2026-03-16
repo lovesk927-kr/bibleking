@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApi } from '../api-context';
+import { useInputFocus } from '../hooks';
 
 interface Props {
   onSuccess: () => void;
@@ -10,6 +11,7 @@ export function AdminLogin({ onSuccess, onBack }: Props) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { api } = useApi();
+  const [inputRef, inputHandlers] = useInputFocus();
 
   const handleLogin = async () => {
     const result = await api.adminLogin(password);
@@ -31,13 +33,14 @@ export function AdminLogin({ onSuccess, onBack }: Props) {
       <div className="form-group">
         <label>비밀번호</label>
         <input
+          ref={inputRef}
           type="password"
           value={password}
           onChange={(e) => { setPassword(e.target.value); setError(''); }}
           onKeyDown={handleKeyDown}
+          {...inputHandlers}
           placeholder="관리자 비밀번호 입력"
           className="input"
-          autoFocus
         />
         {error && <p className="error-text">{error}</p>}
       </div>

@@ -1,13 +1,18 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import type { Character, Item } from '../types';
 import { CHARACTER_INFO } from '../constants';
 import { useApi } from '../api-context';
 import { RewardBox } from './RewardBox';
+import { useInputFocus } from '../hooks';
 
 interface Props {
   onComplete: (character: Character) => void;
   onBack: () => void;
 }
+
+const SECRET_KEY = 5; // 피크민 용사
+const SECRET_TRIGGER_KEY = 1; // 멋진 전사를 15번 클릭
+const SECRET_CLICKS = 15;
 
 export function CharacterCreate({ onComplete, onBack }: Props) {
   const [name, setName] = useState('');
@@ -15,14 +20,29 @@ export function CharacterCreate({ onComplete, onBack }: Props) {
   const [reciteMode, setReciteMode] = useState<number>(0);
   const [createdCharacter, setCreatedCharacter] = useState<Character | null>(null);
   const [welcomeRewards, setWelcomeRewards] = useState<Item[]>([]);
+  const [secretUnlocked, setSecretUnlocked] = useState(false);
+  const [showSecretBanner, setShowSecretBanner] = useState(false);
+  const [triggerClicks, setTriggerClicks] = useState(0);
   const { api } = useApi();
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [inputRef, inputHandlers] = useInputFocus();
 
-  useEffect(() => {
-    // Electron 포커스 이슈 해결: 마운트 시 input에 포커스
-    const timer = setTimeout(() => inputRef.current?.focus(), 100);
-    return () => clearTimeout(timer);
-  }, []);
+  const handleTypeClick = (key: number) => {
+    if (key === SECRET_TRIGGER_KEY && !secretUnlocked) {
+      const next = triggerClicks + 1;
+      setTriggerClicks(next);
+      if (next >= SECRET_CLICKS) {
+        setSecretUnlocked(true);
+        setShowSecretBanner(true);
+        setSelectedType(SECRET_KEY);
+        setTimeout(() => setShowSecretBanner(false), 3000);
+        return;
+      }
+    } else if (key !== SECRET_TRIGGER_KEY) {
+      setTriggerClicks(0);
+    }
+    if (key === SECRET_KEY && !secretUnlocked) return;
+    setSelectedType(key);
+  };
 
   const handleCreate = async () => {
     if (!name.trim()) {
@@ -45,6 +65,15 @@ export function CharacterCreate({ onComplete, onBack }: Props) {
 
   return (
     <div className="page character-create">
+      {showSecretBanner && (
+        <div className="secret-banner">
+          <div className="secret-banner-inner">
+            <div className="secret-star">&#10024;</div>
+            <div className="secret-text">시크릿 캐릭터 발견!</div>
+            <div className="secret-name">{CHARACTER_INFO[SECRET_KEY].emoji} {CHARACTER_INFO[SECRET_KEY].name}</div>
+          </div>
+        </div>
+      )}
       <h1 className="title">캐릭터 생성</h1>
 
       <div className="form-group">
@@ -54,23 +83,24 @@ export function CharacterCreate({ onComplete, onBack }: Props) {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          onMouseDown={(e) => { e.currentTarget.focus(); }}
+          {...inputHandlers}
           placeholder="이름을 입력하세요"
           maxLength={10}
           className="input"
-          autoFocus
         />
       </div>
 
       <div className="form-group">
         <label>캐릭터 선택</label>
         <div className="character-type-grid">
-          {Object.entries(CHARACTER_INFO).map(([key, info]) => (
+          {Object.entries(CHARACTER_INFO)
+            .filter(([key]) => Number(key) !== SECRET_KEY || secretUnlocked)
+            .map(([key, info]) => (
             <div
               key={key}
-              className={`character-type-card ${selectedType === Number(key) ? 'selected' : ''}`}
+              className={`character-type-card ${selectedType === Number(key) ? 'selected' : ''} ${Number(key) === SECRET_KEY ? 'secret-card' : ''}`}
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => setSelectedType(Number(key))}
+              onClick={() => handleTypeClick(Number(key))}
             >
               <div className="character-type-emoji">
                 {info.image
