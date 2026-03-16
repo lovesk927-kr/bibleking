@@ -11,6 +11,10 @@ app.setName('bible-game');
 
 // --multi 파라미터가 없으면 중복 실행 방지
 const isMultiMode = process.argv.includes('--multi');
+if (isMultiMode) {
+  // 멀티 인스턴스는 별도 userData 경로 사용 (DB/캐시 충돌 방지)
+  app.setPath('userData', path.join(app.getPath('userData'), 'multi-instance'));
+}
 if (!isMultiMode) {
   const gotLock = app.requestSingleInstanceLock();
   if (!gotLock) {

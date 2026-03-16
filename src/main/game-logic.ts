@@ -85,6 +85,12 @@ export function calcWinRate(playerPower: number, monsterPower: number, scorePerc
 
 // ===== 레벨업 계산 =====
 
+function getMaxExp(level: number): number {
+  // Lv1~10: 빠른 성장 (30~75), Lv11+: 정상 성장 (level * 100)
+  if (level <= 10) return 30 + (level - 1) * 5;
+  return level * 100;
+}
+
 export function calcLevelUp(currentLevel: number, currentExp: number, currentMaxExp: number, earnedExp: number) {
   let newExp = currentExp + earnedExp;
   let newLevel = currentLevel;
@@ -95,7 +101,7 @@ export function calcLevelUp(currentLevel: number, currentExp: number, currentMax
   while (newExp >= maxExp) {
     newExp -= maxExp;
     newLevel++;
-    maxExp = newLevel * 100;
+    maxExp = getMaxExp(newLevel);
     leveledUp = true;
     levelUps++;
   }

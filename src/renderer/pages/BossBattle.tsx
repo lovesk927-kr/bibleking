@@ -139,15 +139,24 @@ export function BossBattle({ character, villageId, onComplete, onBack }: Props) 
     if (answered || !currentQuestion) return;
     const normalize = (s: string) => s.replace(/[\s,.!?;:'"''""·\u3000]/g, '');
 
+    // 디버그: 치트 커맨드로 보스 즉사
+    if (answerInput === '/kill') {
+      setBattleState(prev => prev ? { ...prev, bossHp: 0 } : null);
+      setBossHitAnim(true);
+      setTimeout(() => setBossHitAnim(false), 500);
+      setLog(prev => [...prev, '⚡ 디버그: 보스 즉사!']);
+      setAnswered(true);
+      if (timerRef.current) clearInterval(timerRef.current);
+      phaseRef.current = 'victory';
+      const bossData = getBossForVillage(villageId);
+      setDefeatLine(bossData?.defeatLine || '');
+      setTimeout(() => setPhase('victory'), 1000);
+      return;
+    }
+
     // 보스전은 항상 빈칸 1개 모드
     const isCorrect = normalize(answerInput) === normalize(currentQuestion.answers[0]);
-    if (isCorrect) {
-      handleAnswer(true);
-    } else {
-      setWrongAnim(true);
-      setAnswerInput('');
-      setTimeout(() => setWrongAnim(false), 500);
-    }
+    handleAnswer(isCorrect);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -159,6 +168,7 @@ export function BossBattle({ character, villageId, onComplete, onBack }: Props) 
 
   const handleVictoryComplete = async () => {
     const result = await window.api.completeBoss({ characterId: character.id, villageId });
+    console.log('[BossBattle] completeBoss result:', JSON.stringify(result));
     onComplete(result);
   };
 
@@ -245,6 +255,9 @@ export function BossBattle({ character, villageId, onComplete, onBack }: Props) 
 
   return (
     <div className="page boss-battle boss-playing">
+      {/* 종료 버튼 */}
+      <button className="btn boss-exit-btn" onClick={onBack}>✕ 포기</button>
+
       {/* 보스 정보 */}
       <div className={`boss-info-section ${bossHitAnim ? 'boss-hit-shake' : ''}`}>
         <div className="boss-display">

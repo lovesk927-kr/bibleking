@@ -78,7 +78,7 @@ export function createCharacterHandlers(): HandlerMap {
 
   handlers['character:create'] = (data: { name: string; type: number; reciteMode: number }) => {
     const description = generateCharacterDescription(data.type);
-    run('INSERT INTO characters (name, character_type, level, exp, max_exp, description, recite_mode) VALUES (?, ?, 1, 0, 100, ?, ?)', [data.name, data.type, description, data.reciteMode]);
+    run('INSERT INTO characters (name, character_type, level, exp, max_exp, description, recite_mode) VALUES (?, ?, 1, 0, 30, ?, ?)', [data.name, data.type, description, data.reciteMode]);
     const newChar = queryOne('SELECT * FROM characters ORDER BY id DESC LIMIT 1');
 
     const welcomeRewards: any[] = [];

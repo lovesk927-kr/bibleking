@@ -121,8 +121,14 @@ export function createBossHandlers(): HandlerMap {
 
     const character = queryOne('SELECT * FROM characters WHERE id = ?', [data.characterId]);
     const level = character ? character.level : 1;
-    const reward = generateMythicItem(level);
-    const savedReward = addItemToCharacter(data.characterId, reward);
+    let savedReward: any = null;
+    let rewardError: string | null = null;
+    try {
+      const reward = generateMythicItem(level);
+      savedReward = addItemToCharacter(data.characterId, reward);
+    } catch (e: any) {
+      rewardError = e.message + ' | ' + e.stack;
+    }
     saveDb();
 
     const clears = queryAll('SELECT village_id FROM boss_clears WHERE character_id = ?', [data.characterId]);
@@ -131,7 +137,7 @@ export function createBossHandlers(): HandlerMap {
     return {
       victory: true, villageId: data.villageId,
       bossName: boss?.name || '보스', bossEmoji: boss?.emoji || '👿',
-      reward: savedReward, lightFragment: clears.length,
+      reward: savedReward, lightFragment: clears.length, rewardError,
     };
   };
 

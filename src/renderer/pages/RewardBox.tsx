@@ -10,9 +10,10 @@ interface Props {
   rewards: RewardItem[];
   onClose: () => void;
   title?: string;
+  levelUp?: { from: number; to: number };
 }
 
-export function RewardBox({ rewards, onClose, title }: Props) {
+export function RewardBox({ rewards, onClose, title, levelUp }: Props) {
   const [opened, setOpened] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -32,6 +33,14 @@ export function RewardBox({ rewards, onClose, title }: Props) {
     return (
       <div className="page reward-box">
         <h1 className="title">{title || '🎁 레벨업 보상!'}</h1>
+        {levelUp && (
+          <div className="levelup-banner">
+            <div className="levelup-congrats">축하합니다!</div>
+            <div className="levelup-levels">
+              Lv.{levelUp.from} → Lv.{levelUp.to}
+            </div>
+          </div>
+        )}
         <div className="box-container" onClick={handleOpen}>
           <div className="treasure-box">📦</div>
           <p className="box-hint">상자를 클릭하여 열기!</p>

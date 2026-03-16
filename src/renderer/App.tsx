@@ -22,7 +22,7 @@ import { PvpBattle } from './pages/PvpBattle';
 import { BossBattle } from './pages/BossBattle';
 import { Cutscene } from './pages/Cutscene';
 import { LocalApiProvider, HostApiProvider, ClientApiProvider, useApi } from './api-context';
-import { VILLAGES, PROLOGUE_SCENES, VILLAGE_CUTSCENES, ENDING_SCENES, getBossForVillage, type Village } from './constants';
+import { VILLAGES, PROLOGUE_SCENES, VILLAGE_CUTSCENES, VILLAGE_ENTER_SCENES, ENDING_SCENES, getBossForVillage, type Village } from './constants';
 import { NetworkClient } from './network-client';
 import type {
   Character,
@@ -60,35 +60,53 @@ function GamePlay({ character: initialCharacter, onBack, isNetworkMode }: {
   const [reciteResult, setReciteResult] = useState<ReciteResultType | null>(null);
   const [battleResult, setBattleResult] = useState<BattleResultType | null>(null);
   const [rewards, setRewards] = useState<Item[]>([]);
+  const [rewardLevelUp, setRewardLevelUp] = useState<{ from: number; to: number } | null>(null);
   const [battleCount, setBattleCount] = useState(0);
-  const [selectedVillageId, setSelectedVillageId] = useState(() => {
-    const maxVillage = VILLAGES.filter(v => v.levelReq <= initialCharacter.level);
-    return maxVillage.length > 0 ? maxVillage[maxVillage.length - 1].id : 1;
-  });
+  const [selectedVillageId, setSelectedVillageId] = useState(1);
+
+  // 보스 클리어 기반으로 최대 해금 마을 설정
+  useEffect(() => {
+    api.getBossClears(initialCharacter.id).then((clears: number[]) => {
+      let maxId = 1;
+      for (const v of VILLAGES) {
+        if (v.levelReq > initialCharacter.level) break;
+        if (v.id === 1 || clears.includes(v.id - 1)) maxId = v.id;
+        else break;
+      }
+      setSelectedVillageId(maxId);
+    });
+  }, [initialCharacter.id]);
   const [unlockedVillage, setUnlockedVillage] = useState<Village | null>(null);
   const [preBattleLevel, setPreBattleLevel] = useState(0);
   const [cutsceneData, setCutsceneData] = useState<{ scenes: any[]; title?: string; onComplete: () => void } | null>(null);
   const [bossVillageId, setBossVillageId] = useState(0);
-  const [bossReward, setBossReward] = useState<Item | null>(null);
+  const [pendingBossUnlock, setPendingBossUnlock] = useState<Village | null>(null);
+  const [pendingBossCutscene, setPendingBossCutscene] = useState<{ scenes: any[]; title: string } | null>(null);
 
   const { api } = useApi();
   const navigate = (p: GamePage) => setPage(p);
 
-  const checkVillageUnlock = (oldLevel: number, newLevel: number) => {
-    // 새로 해금된 마을 중 가장 높은 마을 찾기
-    const newlyUnlocked = VILLAGES.filter(v => v.levelReq > oldLevel && v.levelReq <= newLevel);
-    if (newlyUnlocked.length > 0) {
-      const highest = newlyUnlocked[newlyUnlocked.length - 1];
-      setUnlockedVillage(highest);
-      setSelectedVillageId(highest.id);
-      navigate('villageUnlock');
-      return true;
-    }
-    return false;
-  };
-
-  const handleVillageUnlockClose = () => {
+  const handleVillageUnlockClose = async () => {
+    const village = unlockedVillage;
     setUnlockedVillage(null);
+
+    // 해금된 마을의 진입 컷신 보여주기
+    if (village) {
+      const enterCutscene = VILLAGE_ENTER_SCENES.find(c => c.villageId === village.id);
+      const enterSeen = await api.getCutsceneSeen({ characterId: character.id, villageId: village.id, type: 'village_enter' });
+      if (enterCutscene && !enterSeen) {
+        setCutsceneData({
+          scenes: enterCutscene.scenes,
+          title: `${village.name}`,
+          onComplete: async () => {
+            await api.setCutsceneSeen({ characterId: character.id, villageId: village.id, type: 'village_enter' });
+            navigate('main');
+          },
+        });
+        navigate('cutscene');
+        return;
+      }
+    }
     navigate('main');
   };
 
@@ -133,54 +151,46 @@ function GamePlay({ character: initialCharacter, onBack, isNetworkMode }: {
   };
 
   const handleBossComplete = async (result: BossBattleResult) => {
+    console.log('[BossComplete] result:', JSON.stringify(result));
+    setBossVillageId(0);
     const updated = await api.getCharacter(character.id);
     if (updated) setCharacter(updated);
 
-    if (result.victory) {
-      // 보스 클리어 컷신
-      const clearCutscene = VILLAGE_CUTSCENES.find(c => c.villageId === result.villageId && c.type === 'clear');
-      if (clearCutscene) {
-        setCutsceneData({
-          scenes: clearCutscene.scenes,
-          title: '보스 처치!',
-          onComplete: () => {
-            if (result.reward) {
-              setBossReward(result.reward);
-              setRewards([result.reward]);
-              navigate('rewardBox');
-            } else {
-              navigate('main');
-            }
-          },
-        });
-        navigate('cutscene');
-      } else if (result.reward) {
-        setRewards([result.reward]);
-        navigate('rewardBox');
-      } else {
-        navigate('main');
-      }
+    if (!result.victory) { navigate('main'); return; }
 
-      // 마지막 보스 클리어 시 엔딩
-      if (result.villageId === 20) {
-        const allClears = await api.getBossClears(character.id);
-        if (allClears.length >= 20) {
-          // 보상 후 엔딩 표시
-          const showEnding = () => {
-            setCutsceneData({
-              scenes: ENDING_SCENES,
-              title: '엔딩',
-              onComplete: () => navigate('main'),
-            });
-            navigate('cutscene');
-          };
-          // 보상이 있으면 보상 후 엔딩, 없으면 바로 엔딩
-          if (!result.reward) {
-            showEnding();
-            return;
+    // 보스 클리어 후 대기 항목 계산
+    const nextVillage = VILLAGES.find(v => v.id === result.villageId + 1);
+    const unlockTarget = (nextVillage && updated && updated.level >= nextVillage.levelReq) ? nextVillage : null;
+    const clearCutscene = VILLAGE_CUTSCENES.find(c => c.villageId === result.villageId && c.type === 'clear');
+
+    // 흐름: 보상 → 컷신 → 마을 해금
+    if (result.reward) {
+      // 보상 후에 처리할 컷신/마을해금 저장
+      if (clearCutscene) setPendingBossCutscene({ scenes: clearCutscene.scenes, title: '보스 처치!' });
+      if (unlockTarget) setPendingBossUnlock(unlockTarget);
+      setRewards([result.reward]);
+      navigate('rewardBox');
+    } else if (clearCutscene) {
+      // 보상 없이 컷신 → 마을 해금
+      setCutsceneData({
+        scenes: clearCutscene.scenes,
+        title: '보스 처치!',
+        onComplete: () => {
+          if (unlockTarget) {
+            setUnlockedVillage(unlockTarget);
+            setSelectedVillageId(unlockTarget.id);
+            navigate('villageUnlock');
+          } else {
+            navigate('main');
           }
-        }
-      }
+        },
+      });
+      navigate('cutscene');
+    } else if (unlockTarget) {
+      // 보상/컷신 없이 바로 마을 해금
+      setUnlockedVillage(unlockTarget);
+      setSelectedVillageId(unlockTarget.id);
+      navigate('villageUnlock');
     } else {
       navigate('main');
     }
@@ -207,35 +217,120 @@ function GamePlay({ character: initialCharacter, onBack, isNetworkMode }: {
     const battleDrops = battleResult?.victory ? (battleResult?.battleRewards || []) : [];
     const allRewards = [...levelUpRewards, ...battleDrops];
     if (allRewards.length > 0) {
+      const currentLevel = character.level;
+      const updated = await api.getCharacter(character.id);
+      const newLevel = updated?.level || currentLevel;
+      setRewardLevelUp(newLevel > preBattleLevel ? { from: preBattleLevel, to: newLevel } : null);
       setRewards(allRewards);
       navigate('rewardBox');
     } else {
+      setRewardLevelUp(null);
       const updated = await api.getCharacter(character.id);
-      if (updated) {
-        setCharacter(updated);
-        if (!checkVillageUnlock(preBattleLevel, updated.level)) {
-          navigate('main');
-        }
-      } else {
-        navigate('main');
-      }
+      if (updated) setCharacter(updated);
+      navigate('main');
     }
   };
 
   const handleRewardClose = async () => {
     const updated = await api.getCharacter(character.id);
-    if (updated) {
-      setCharacter(updated);
-      if (!checkVillageUnlock(preBattleLevel, updated.level)) {
-        navigate('main');
-      }
-    } else {
-      navigate('main');
+    if (updated) setCharacter(updated);
+
+    // 보스전: 보상 → 컷신 → 마을 해금 순서
+    if (pendingBossCutscene) {
+      const cutscene = pendingBossCutscene;
+      setPendingBossCutscene(null);
+      setCutsceneData({
+        scenes: cutscene.scenes,
+        title: cutscene.title,
+        onComplete: () => {
+          if (pendingBossUnlock) {
+            const village = pendingBossUnlock;
+            setPendingBossUnlock(null);
+            setUnlockedVillage(village);
+            setSelectedVillageId(village.id);
+            navigate('villageUnlock');
+          } else {
+            navigate('main');
+          }
+        },
+      });
+      navigate('cutscene');
+      return;
     }
+
+    if (pendingBossUnlock) {
+      const village = pendingBossUnlock;
+      setPendingBossUnlock(null);
+      setUnlockedVillage(village);
+      setSelectedVillageId(village.id);
+      navigate('villageUnlock');
+      return;
+    }
+
+    navigate('main');
+  };
+
+  // 디버그 패널 (Ctrl+Shift+D)
+  const [showDebug, setShowDebug] = useState(false);
+  const [debugLevel, setDebugLevel] = useState(String(character.level));
+  const [debugExp, setDebugExp] = useState('99');
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+        setShowDebug(prev => !prev);
+        setDebugLevel(String(character.level));
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [character.level]);
+
+  const handleDebugApply = async () => {
+    const level = parseInt(debugLevel);
+    const expPercent = parseInt(debugExp);
+    if (isNaN(level) || level < 1 || isNaN(expPercent) || expPercent < 0 || expPercent > 100) return;
+    await window.api.debugSetLevel({ characterId: character.id, level, expPercent });
+    const updated = await api.getCharacter(character.id);
+    if (updated) setCharacter(updated);
+    setShowDebug(false);
+  };
+
+  const handleDebugResetBoss = async () => {
+    await window.api.debugResetBoss(character.id);
+    const updated = await api.getCharacter(character.id);
+    if (updated) setCharacter(updated);
+    setShowDebug(false);
+  };
+
+  const handleDebugAddConsumable = async (type: string, qty: number) => {
+    await window.api.addConsumable({ characterId: character.id, type, quantity: qty });
+    setShowDebug(false);
   };
 
   return (
     <>
+      {showDebug && (
+        <div className="debug-panel">
+          <div className="debug-panel-inner">
+            <h3>디버그 패널</h3>
+            <p>캐릭터: {character.name} (Lv.{character.level})</p>
+            <div className="debug-row">
+              <label>레벨: <input type="number" value={debugLevel} onChange={e => setDebugLevel(e.target.value)} min="1" max="999" /></label>
+              <label>경험치(%): <input type="number" value={debugExp} onChange={e => setDebugExp(e.target.value)} min="0" max="100" /></label>
+            </div>
+            <div className="debug-buttons">
+              <button className="btn btn-primary" onClick={handleDebugApply}>적용</button>
+              <button className="btn btn-secondary" onClick={handleDebugResetBoss}>보스 기록 초기화</button>
+            </div>
+            <div className="debug-buttons" style={{ marginTop: '8px' }}>
+              <button className="btn btn-secondary" onClick={() => handleDebugAddConsumable('perfect_score', 10)}>📜 100점권 +10</button>
+              <button className="btn btn-secondary" onClick={() => handleDebugAddConsumable('hint', 10)}>💡 힌트권 +10</button>
+              <button className="btn btn-secondary" onClick={() => setShowDebug(false)}>닫기</button>
+            </div>
+          </div>
+        </div>
+      )}
       {page === 'main' && (
         <MainScreen character={character} onRecite={handleReciteClick} onTraining={() => navigate('training')} onInventory={() => navigate('inventory')} onDetail={() => navigate('characterDetail')} onBack={onBack} isNetworkMode={isNetworkMode} />
       )}
@@ -245,12 +340,12 @@ function GamePlay({ character: initialCharacter, onBack, isNetworkMode }: {
       {page === 'recite' && <ReciteQuiz key={`recite-${battleCount}`} character={character} villageId={selectedVillageId} onComplete={handleReciteComplete} onBack={() => navigate('monsterEncounter')} />}
       {page === 'reciteResult' && reciteResult && <ReciteResult result={reciteResult} villageId={selectedVillageId} onClose={handleResultClose} onBack={() => navigate('monsterEncounter')} />}
       {page === 'battle' && battleResult && <BattleScreen battleResult={battleResult} onClose={handleBattleClose} />}
-      {page === 'rewardBox' && <RewardBox rewards={rewards} onClose={handleRewardClose} />}
+      {page === 'rewardBox' && <RewardBox rewards={rewards} onClose={handleRewardClose} levelUp={rewardLevelUp || undefined} />}
       {page === 'training' && <TrainingMode character={character} onBack={() => navigate('main')} />}
       {page === 'characterDetail' && <CharacterDetail character={character} onBack={() => navigate('main')} onCharacterUpdate={setCharacter} />}
       {page === 'inventory' && <Inventory character={character} onBack={() => navigate('main')} />}
       {page === 'bossBattle' && (
-        <BossBattle character={character} villageId={bossVillageId} onComplete={handleBossComplete} onBack={() => navigate('main')} />
+        <BossBattle character={character} villageId={bossVillageId} onComplete={handleBossComplete} onBack={() => { setBossVillageId(0); navigate('main'); }} />
       )}
       {page === 'cutscene' && cutsceneData && (
         <Cutscene

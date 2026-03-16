@@ -1,4 +1,4 @@
-import { queryOne, run } from '../db';
+import { queryOne, run, saveDb } from '../db';
 import { HandlerMap } from './types';
 
 export function createDebugHandlers(): HandlerMap {
@@ -28,10 +28,18 @@ export function createDebugHandlers(): HandlerMap {
   };
 
   handlers['debug:setLevel'] = (data: { characterId: number; level: number; expPercent: number }) => {
-    const maxExp = data.level * 100;
+    const maxExp = data.level <= 10 ? 30 + (data.level - 1) * 5 : data.level * 100;
     const exp = Math.floor(maxExp * data.expPercent / 100);
     run('UPDATE characters SET level = ?, exp = ?, max_exp = ? WHERE id = ?', [data.level, exp, maxExp, data.characterId]);
+    saveDb();
     return queryOne('SELECT * FROM characters WHERE id = ?', [data.characterId]);
+  };
+
+  handlers['debug:resetBoss'] = (characterId: number) => {
+    run('DELETE FROM boss_clears WHERE character_id = ?', [characterId]);
+    run('DELETE FROM cutscene_seen WHERE character_id = ?', [characterId]);
+    saveDb();
+    return { success: true };
   };
 
   return handlers;

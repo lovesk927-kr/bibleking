@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { Character, Item } from '../types';
 import { CHARACTER_INFO } from '../constants';
 import { useApi } from '../api-context';
@@ -16,6 +16,13 @@ export function CharacterCreate({ onComplete, onBack }: Props) {
   const [createdCharacter, setCreatedCharacter] = useState<Character | null>(null);
   const [welcomeRewards, setWelcomeRewards] = useState<Item[]>([]);
   const { api } = useApi();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Electron 포커스 이슈 해결: 마운트 시 input에 포커스
+    const timer = setTimeout(() => inputRef.current?.focus(), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleCreate = async () => {
     if (!name.trim()) {
@@ -43,12 +50,15 @@ export function CharacterCreate({ onComplete, onBack }: Props) {
       <div className="form-group">
         <label>캐릭터 이름</label>
         <input
+          ref={inputRef}
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          onMouseDown={(e) => { e.currentTarget.focus(); }}
           placeholder="이름을 입력하세요"
           maxLength={10}
           className="input"
+          autoFocus
         />
       </div>
 
@@ -59,6 +69,7 @@ export function CharacterCreate({ onComplete, onBack }: Props) {
             <div
               key={key}
               className={`character-type-card ${selectedType === Number(key) ? 'selected' : ''}`}
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => setSelectedType(Number(key))}
             >
               <div className="character-type-emoji">
@@ -78,6 +89,7 @@ export function CharacterCreate({ onComplete, onBack }: Props) {
         <div className="recite-mode-grid">
           <div
             className={`recite-mode-card ${reciteMode === 0 ? 'selected' : ''}`}
+            onMouseDown={(e) => e.preventDefault()}
             onClick={() => setReciteMode(0)}
           >
             <div className="recite-mode-icon">📝</div>
@@ -86,6 +98,7 @@ export function CharacterCreate({ onComplete, onBack }: Props) {
           </div>
           <div
             className={`recite-mode-card ${reciteMode === 1 ? 'selected' : ''}`}
+            onMouseDown={(e) => e.preventDefault()}
             onClick={() => setReciteMode(1)}
           >
             <div className="recite-mode-icon">🔲</div>

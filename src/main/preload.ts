@@ -110,6 +110,7 @@ contextBridge.exposeInMainWorld('api', {
 
   // 디버그
   debugSetLevel: (data: { characterId: number; level: number; expPercent: number }) => ipcRenderer.invoke('debug:setLevel', data),
+  debugResetBoss: (characterId: number) => ipcRenderer.invoke('debug:resetBoss', characterId),
 
   // 파일 내보내기/가져오기
   exportVerses: () => ipcRenderer.invoke('file:exportVerses'),

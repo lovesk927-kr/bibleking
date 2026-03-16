@@ -59,14 +59,14 @@ export function MainScreen({ character, onRecite, onTraining, onInventory, onDet
       </div>
 
       <div className="menu-buttons">
+        <button className="btn btn-game btn-detail" onClick={onDetail}>
+          👤 캐릭터 상세
+        </button>
         <button className="btn btn-game btn-training" onClick={onTraining}>
           📝 트레이닝
         </button>
         <button className={`btn btn-game ${bossReady ? 'btn-boss-ready' : 'btn-recite'}`} onClick={onRecite}>
           {bossReady ? `${bossReady.emoji} 보스 전투! — ${bossReady.name}` : '⚔️ 전투 시작'}
-        </button>
-        <button className="btn btn-game btn-detail" onClick={onDetail}>
-          👤 캐릭터 상세
         </button>
         <button className="btn btn-game btn-inventory" onClick={onInventory}>
           🎒 가방

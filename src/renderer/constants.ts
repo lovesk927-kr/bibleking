@@ -11,26 +11,33 @@ export interface BossData {
 }
 
 export const BOSSES: BossData[] = [
-  { villageId: 1, name: '타락한 뱀', emoji: '🐍', title: '에덴의 지배자', enterLine: '네가 그 말씀의 전사? 하하... 에덴에서 말씀을 지킨 자는 아무도 없었다.', defeatLine: '으으... 이 말씀의 힘은... 에덴에서 처음 느껴보는...', newVerses: [1], quizRange: [1, 1] },
-  { villageId: 2, name: '여왕벌레 플로라', emoji: '🦟', title: '동산의 포식자', enterLine: '이 동산의 꽃은 모두 내 것이다. 네 말씀 따위로 나를 막을 수 있을까?', defeatLine: '안 돼... 꽃들이... 다시 피어나고 있어...!', newVerses: [2], quizRange: [1, 2] },
-  { villageId: 3, name: '그림자 속삭이는 자', emoji: '👤', title: '유혹의 화신', enterLine: '쉿... 조용히 해. 말씀을 잊으면 편안해질 수 있어...', defeatLine: '말씀을... 잊지 않다니... 내 속삭임이... 통하지 않는다...', newVerses: [3], quizRange: [1, 3] },
-  { villageId: 4, name: '타락천사 아자젤', emoji: '😈', title: '실락원의 군주', enterLine: '한때 나도 빛의 존재였다. 너도 곧 나처럼 될 것이다.', defeatLine: '빛을... 다시 보게 되다니... 이것이... 말씀의 힘인가...', newVerses: [4, 5], quizRange: [1, 5] },
-  { villageId: 5, name: '사막의 폭군 스콜피온', emoji: '🦂', title: '가시 사막의 왕', enterLine: '이 사막에서 살아 나간 자는 없다. 너도 모래 속에 묻혀라!', defeatLine: '사막을... 걸어서... 통과하다니... 불가능한 일이...', newVerses: [6, 7], quizRange: [1, 7] },
-  { villageId: 6, name: '교만의 거인 니므롯', emoji: '🗿', title: '바벨의 망령', enterLine: '내가 하늘에 닿는 탑을 세웠다! 네 따위 말씀이 나를 이길 수 있겠느냐!', defeatLine: '내 탑이... 무너진다... 겸손한 자의 말씀 앞에...', newVerses: [8], quizRange: [1, 8] },
-  { villageId: 7, name: '유황의 화신', emoji: '🌋', title: '소돔의 불꽃', enterLine: '이 도시를 태운 불은 꺼지지 않는다. 너도 재가 되어라!', defeatLine: '이 불이... 꺼져간다... 말씀의 빛에... 삼켜진다...', newVerses: [9, 10], quizRange: [1, 10] },
-  { villageId: 8, name: '심연의 리바이어던', emoji: '🐋', title: '대홍수의 괴수', enterLine: '깊은 물속에서 올라왔다... 네 말씀의 방주, 내가 부숴주마.', defeatLine: '물이... 물러간다... 방주가... 진짜였다니...', newVerses: [11, 12], quizRange: [1, 12] },
-  { villageId: 9, name: '광야의 시험자', emoji: '👁️', title: '유혹의 그림자', enterLine: '배고프지 않느냐? 목마르지 않느냐? 말씀을 버리면 모든 것을 주겠다.', defeatLine: '말씀으로... 이기다니... 그분처럼...', newVerses: [13], quizRange: [1, 13] },
-  { villageId: 10, name: '독의 어머니 마라', emoji: '🧪', title: '저주의 근원', enterLine: '달콤한 물을 원하느냐? 내 독을 마셔라... 고통이 사라질 것이다...', defeatLine: '물이... 달게 변하고 있어... 내 독이... 정화되다니...', newVerses: [14, 15], quizRange: [1, 15] },
-  { villageId: 11, name: '금송아지의 우상', emoji: '🐂', title: '거짓 신', enterLine: '사람들은 보이지 않는 신보다 나를 선택했다! 너도 내 앞에 무릎 꿇어라!', defeatLine: '보이지 않는 분이... 이렇게 강하다니... 나는... 그저 금덩이에 불과했다...', newVerses: [16, 17], quizRange: [1, 17] },
-  { villageId: 12, name: '여리고의 철벽장군', emoji: '🛡️', title: '난공불락의 수호자', enterLine: '이 성벽은 절대 무너지지 않는다. 네 함성 따위로는!', defeatLine: '성벽이... 무너진다...! 믿음의 함성에...!', newVerses: [18], quizRange: [1, 18] },
-  { villageId: 13, name: '공포의 군주 골리앗', emoji: '⚔️', title: '어둠의 거인', enterLine: '꼬마 전사가 나에게 도전한다고? 다윗처럼 운이 좋길 바라라!', defeatLine: '또... 작은 자에게... 지다니... 말씀의 돌멩이 하나에...', newVerses: [19, 20], quizRange: [1, 20] },
-  { villageId: 14, name: '배신자의 그림자', emoji: '💰', title: '은 서른 냥의 유혹', enterLine: '은 서른 냥이면 충분하지 않느냐? 말씀을 팔아라...', defeatLine: '은 서른 냥보다... 말씀이... 더 가치 있다는 것이냐...', newVerses: [21, 22], quizRange: [1, 22] },
-  { villageId: 15, name: '묵시록의 네 기사', emoji: '🏇', title: '종말의 선봉대', enterLine: '일곱 인이 풀렸다. 이제 세상의 끝이다. 네 말씀으로 이것을 막을 수 있겠느냐!', defeatLine: '어린 양이... 이긴다는 예언이... 진짜였다니...!', newVerses: [23, 24], quizRange: [1, 24] },
-  { villageId: 16, name: '용광로의 불꽃 드래곤', emoji: '🐉', title: '혼돈의 용', enterLine: '정화라고? 나는 파괴할 뿐이다! 너를 태워 재로 만들어주마!', defeatLine: '이 불 속에서... 순금이 되어 나오다니... 파괴할 수 없는 자...', newVerses: [25], quizRange: [1, 25] },
-  { villageId: 17, name: '하늘의 방해자', emoji: '🦅', title: '공중 권세', enterLine: '하늘은 네가 올 곳이 아니다. 다시 땅으로 떨어져라!', defeatLine: '하늘의 문이... 열린다... 막을 수... 없다...', newVerses: [26, 27], quizRange: [1, 27] },
-  { villageId: 18, name: '거짓 왕', emoji: '🤴', title: '왕좌의 사칭자', enterLine: '내가 진짜 왕이다! 네가 섬기는 왕은 가짜다!', defeatLine: '진짜 왕이... 누구인지... 이제야... 알겠다...', newVerses: [28, 29], quizRange: [1, 29] },
-  { villageId: 19, name: '오염자 아바돈', emoji: '🦠', title: '멸망의 천사', enterLine: '이 맑은 물을 더럽히면 세상은 영원히 치유되지 못한다. 막아볼 테냐?', defeatLine: '생명수가... 정화되었다... 내 오염이... 씻겨나간다...', newVerses: [30], quizRange: [1, 30] },
-  { villageId: 20, name: '어둠의 왕', emoji: '👿', title: '모든 어둠의 근원', enterLine: '나는 태초부터 있었다. 빛의 조각을 모았다고? 내 앞에서는 아무 의미 없다!', defeatLine: '빛이... 어둠을... 이겼다... 태초부터... 정해진 결말이었던가...', newVerses: [31, 32], quizRange: [1, 32] },
+  // 1막: 부정 (1~4) — "나는 괜찮아"
+  { villageId: 1, name: '타락한 뱀', emoji: '🐍', title: '에덴의 지배자', enterLine: '선악을 네가 판단할 수 있다. 네 눈이 곧 진리다. 말씀 따위 필요 없어.', defeatLine: '으으... 이 말씀의 힘은... 하지만 기억해라, 너도 결국 그 열매를 먹게 될 것이다...', newVerses: [1], quizRange: [1, 1] },
+  { villageId: 2, name: '여왕벌레 플로라', emoji: '🦟', title: '동산의 포식자', enterLine: '아름다운 것을 탐하는 게 뭐가 나쁘냐? 네 욕심이 곧 네 본성이다!', defeatLine: '안 돼... 이 아름다운 것들이 내 것이 아니란 말이냐...', newVerses: [2], quizRange: [1, 2] },
+  { villageId: 3, name: '그림자 속삭이는 자', emoji: '👤', title: '유혹의 화신', enterLine: '쉿... 한 번쯤은 괜찮아. 누가 보겠어? 네 마음속 진짜 욕망에 솔직해져.', defeatLine: '속삭임이... 통하지 않다니... 하지만 네 안에 내 씨앗은 이미 심어졌다...', newVerses: [3], quizRange: [1, 3] },
+  { villageId: 4, name: '타락천사 아자젤', emoji: '😈', title: '실락원의 군주', enterLine: '나도 한때 의로운 존재였다. 너와 나의 차이가 뭔지 아느냐? 없다!', defeatLine: '쓰러지면서도... 말해두마... 네 안에도 교만이 있다. 곧 알게 될 것이다...', newVerses: [4, 5], quizRange: [1, 5] },
+  // 2막: 균열 (5~7) — "뭔가 이상하다"
+  { villageId: 5, name: '사막의 폭군 스콜피온', emoji: '🦂', title: '가시 사막의 왕', enterLine: '고통이 느껴지지? 네가 진짜 의로운 자라면 왜 고난이 오는 거지?', defeatLine: '고통 속에서도... 말씀을 놓지 않다니... 하지만 이건 시작일 뿐이다...', newVerses: [6, 7], quizRange: [1, 7] },
+  { villageId: 6, name: '교만의 거인 니므롯', emoji: '🗿', title: '바벨의 망령', enterLine: '하늘까지 닿는 탑! 내 힘으로 세웠다! 너도 네 힘을 믿잖아, 안 그래?', defeatLine: '내 탑이... 무너진다... 네 안의 교만도... 함께 무너지길...', newVerses: [8], quizRange: [1, 8] },
+  { villageId: 7, name: '유황의 화신', emoji: '🌋', title: '소돔의 불꽃', enterLine: '심판이 두렵냐? 하하, 네가 심판받을 일이 없다고 생각하는 거지?', defeatLine: '불이... 꺼져간다... 하지만 심판의 불은... 네 안에서도 타고 있다는 걸 알아라...', newVerses: [9, 10], quizRange: [1, 10] },
+  // 3막: 자각 (8~10) — "나도 죄인이었구나"
+  { villageId: 8, name: '심연의 리바이어던', emoji: '🐋', title: '대홍수의 괴수', enterLine: '온 세상이 물에 잠겼다. 의로운 자가 없었기 때문이지. 너는 의롭냐?', defeatLine: '방주에... 들어간 자는... 오직 은혜로... 살았을 뿐...', newVerses: [11, 12], quizRange: [1, 12] },
+  { villageId: 9, name: '광야의 시험자', emoji: '👁️', title: '유혹의 그림자', enterLine: '네가 지금까지 이긴 건 네 힘이 아니야. 시험해볼까? 진짜 네 힘으로 해봐.', defeatLine: '결국... 말씀에 의지하는구나... 네 힘이 아니란 걸... 알기 시작했어...', newVerses: [13], quizRange: [1, 13] },
+  { villageId: 10, name: '독의 어머니 마라', emoji: '🧪', title: '저주의 근원', enterLine: '쓴 물이 싫다고? 불평하는 네 모습, 이스라엘과 똑같구나. 너도 결국 같은 죄인이야.', defeatLine: '인정했구나... 네가 죄인이라는 것을... 그 고백이... 나를 물리치다니...', newVerses: [14, 15], quizRange: [1, 15] },
+  // 4막: 구원 (11) — "주님, 저를 구해주세요"
+  { villageId: 11, name: '금송아지의 우상', emoji: '🐂', title: '거짓 신', enterLine: '보이지 않는 신이 뭘 해줬냐? 내가 눈에 보이잖아! 네 힘, 네 노력, 네 성공... 그게 네 신이다!', defeatLine: '네가... 우상을 버렸다... 네 자신이라는 우상까지... 이것이 진짜 구원인가...', newVerses: [16, 17], quizRange: [1, 17] },
+  // 5막: 순종의 어려움 (12~16) — "구원받았는데 왜 또 넘어지지"
+  { villageId: 12, name: '여리고의 철벽장군', emoji: '🛡️', title: '난공불락의 수호자', enterLine: '머리로는 믿는다고? 행동이 안 따라오잖아! 이 성벽은 네 불순종이다!', defeatLine: '순종이... 성벽을 무너뜨리다니... 아는 것과 행하는 것은... 다른 것이었구나...', newVerses: [18], quizRange: [1, 18] },
+  { villageId: 13, name: '공포의 군주 골리앗', emoji: '⚔️', title: '어둠의 거인', enterLine: '기도해도 응답이 없지? 하나님이 널 버린 거야. 혼자 싸워봐!', defeatLine: '작은 돌멩이... 하나에... 하나님이 함께하면... 거인도 쓰러지는구나...', newVerses: [19, 20], quizRange: [1, 20] },
+  { villageId: 14, name: '배신자의 그림자', emoji: '💰', title: '은 서른 냥의 유혹', enterLine: '네 뜻대로 살면 안 되냐? 왜 네 인생을 남에게 맡기지? 네 인생은 네 거야!', defeatLine: '내 뜻대로 마시고... 아버지의 뜻대로... 그 고백이... 나를 이기는구나...', newVerses: [21, 22], quizRange: [1, 22] },
+  { villageId: 15, name: '묵시록의 네 기사', emoji: '🏇', title: '종말의 선봉대', enterLine: '믿음 때문에 더 힘들어졌잖아! 차라리 믿기 전이 나았어! 포기해!', defeatLine: '핍박 속에서도... 놓지 않다니... 끝까지 견디는 자가... 구원을 얻는다는 말이 진짜였어...', newVerses: [23, 24], quizRange: [1, 24] },
+  { villageId: 16, name: '용광로의 불꽃 드래곤', emoji: '🐉', title: '혼돈의 용', enterLine: '이 고통에 무슨 의미가 있냐! 하나님이 널 사랑하면 왜 아프게 하지!', defeatLine: '이 불이... 파괴가 아니라 정화였다니... 고난이 연단을... 연단이 소망을 만든다는 것이...', newVerses: [25], quizRange: [1, 25] },
+  // 6막: 성숙과 회복 (17~19) — "넘어져도 다시 일어난다"
+  { villageId: 17, name: '하늘의 방해자', emoji: '🦅', title: '공중 권세', enterLine: '소망? 이 세상에서 소망을 말하다니 어리석구나! 현실을 봐!', defeatLine: '보이는 것이 아닌... 보이지 않는 것을 바라보는 자... 막을 수 없구나...', newVerses: [26, 27], quizRange: [1, 27] },
+  { villageId: 18, name: '거짓 왕', emoji: '🤴', title: '왕좌의 사칭자', enterLine: '네 삶의 주인은 너야! 왜 남의 뜻에 복종하지? 자유롭게 살아!', defeatLine: '진짜 자유가... 순종 안에 있다니... 내가 준 자유는... 거짓이었던가...', newVerses: [28, 29], quizRange: [1, 29] },
+  { villageId: 19, name: '오염자 아바돈', emoji: '🦠', title: '멸망의 천사', enterLine: '네 과거의 죄는 지워지지 않아! 네가 한 짓을 기억해봐! 넌 변하지 않았어!', defeatLine: '옛 것이... 지나갔다니... 새 것이 되었다니... 이 정화의 물을... 막을 수 없다...', newVerses: [30], quizRange: [1, 30] },
+  // 7막: 완성 (20) — "천국"
+  { villageId: 20, name: '어둠의 왕', emoji: '👿', title: '모든 어둠의 근원', enterLine: '마지막이다. 네 안에 아직 남아있는 죄성, 그것이 바로 나다. 너는 영원히 나를 이길 수 없어!', defeatLine: '빛이... 어둠을... 이겼다... 십자가에서... 이미 끝난 싸움이었구나...', newVerses: [31, 32], quizRange: [1, 32] },
 ];
 
 export function getBossForVillage(villageId: number): BossData | undefined {
@@ -40,88 +47,246 @@ export function getBossForVillage(villageId: number): BossData | undefined {
 // ===== 스토리 컷신 데이터 =====
 export interface CutsceneData {
   villageId: number;
-  type: 'enter' | 'clear';
+  type: 'enter' | 'clear' | 'village_enter';
   scenes: { speaker: string; speakerEmoji: string; lines: string[] }[];
 }
 
 export const PROLOGUE_SCENES = [
-  { speaker: '나레이션', speakerEmoji: '📜', lines: ['태초에 말씀이 계시니라. 말씀의 빛이 온 세상을 비추어 어둠이 감히 범접하지 못하였더라.'] },
-  { speaker: '나레이션', speakerEmoji: '📜', lines: ['그러나 어둠의 세력이 말씀의 빛을 산산이 부수어 스무 조각으로 흩어버리니, 세상은 어둠에 잠식되고 짐승들이 들끓기 시작하였더라.'] },
-  { speaker: '나레이션', speakerEmoji: '📜', lines: ['사람들은 마을에 갇혀 두려움 속에 살아갔다. 그때, 에덴의 장로가 예언하였으니—'] },
-  { speaker: '장로', speakerEmoji: '👴', lines: ['말씀을 마음에 새기는 자가 나타나리라. 그가 어둠을 물리치고 빛의 조각을 되찾으리니...'] },
-  { speaker: '장로', speakerEmoji: '👴', lines: ['오... 네가 바로 {닉네임}이로구나. 내가 오래 기다렸다.', '너는 여느 전사와 다르다. 칼과 방패가 아닌, 말씀의 힘으로 싸우는 자이니라.'] },
-  { speaker: '장로', speakerEmoji: '👴', lines: ['이 두루마리를 받아라. 네가 말씀을 암송할 때마다 이 안에 힘이 깃들 것이다.', '에덴 바깥은 이미 어둠에 물들었다. 하지만 두려워 말라. 말씀을 네 마음에 새기면 어떤 어둠도 너를 이기지 못하리라.'] },
-  { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['제가 할 수 있을까요?'] },
-  { speaker: '장로', speakerEmoji: '👴', lines: ['할 수 있느냐고? 하하... {닉네임}, 네가 하는 것이 아니다. 말씀이 하는 것이니라. 네가 말씀을 외우면, 말씀이 너를 통해 싸울 것이다.', '자, 먼저 이 에덴의 들짐승들부터 상대해보거라. 그것이 네 첫 번째 시험이니라.'] },
+  { speaker: '나레이션', speakerEmoji: '📜', lines: ['에덴 마을에는 말씀의 빛이 있었다. 그 빛은 마을을 지키고, 어둠과 짐승들을 물리쳐 주었다.'] },
+  { speaker: '나레이션', speakerEmoji: '📜', lines: ['그러나 어느 날, 어둠의 세력이 말씀의 빛을 산산이 부수어 스무 조각으로 흩어버렸다.'] },
+  { speaker: '나레이션', speakerEmoji: '📜', lines: ['빛을 잃은 마을에 짐승들이 들끓기 시작했고, 사람들은 두려움에 떨었다.'] },
+  { speaker: '장로', speakerEmoji: '👴', lines: ['이 마을을 지키던 빛이 사라졌다. 누군가 빛의 조각을 되찾아야 한다.', '{닉네임}, 네가 그 일을 해줄 수 있겠느냐?'] },
+  { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['장로님, 걱정 마세요! 제가 다 해결하겠습니다. 저 정도면 충분히 할 수 있어요!'] },
+  { speaker: '장로', speakerEmoji: '👴', lines: ['이 두루마리를 받아라. 말씀을 암송할 때마다 이 안에 힘이 깃들 것이다.'] },
+  { speaker: '장로', speakerEmoji: '👴', lines: ['{닉네임}아... 네 자신감은 좋으나, 기억하거라.', '이 여정은 단순히 어둠을 물리치는 것이 아니다. 네가 진정 누구인지... 언젠가 알게 될 것이니라.'] },
+  { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['네? 무슨 말씀이세요? 에이, 일단 가보겠습니다!'] },
 ];
 
 export const VILLAGE_CUTSCENES: CutsceneData[] = [
+  // 1막: 부정 — 보스전 진입 & 클리어 컷신
   { villageId: 1, type: 'clear', scenes: [
-    { speaker: '장로', speakerEmoji: '👴', lines: ['해냈구나, {닉네임}! 첫 번째 빛의 조각이 돌아왔다.', '하지만 이것은 시작일 뿐이다. 아직 열아홉 조각이 남아있느니라.', '에덴 너머 기쁨의 동산으로 가거라. 그곳은 아직 아름다움이 남아있지만... 어둠이 스며들고 있다.'] },
+    { speaker: '장로', speakerEmoji: '👴', lines: ['해냈구나, {닉네임}! 첫 번째 빛의 조각이 돌아왔다.', '그 뱀은 네게 무어라 하더냐? "네가 스스로 판단할 수 있다"고?'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['네, 하지만 제 말씀의 힘으로 물리쳤죠! 이 정도는 쉬운걸요.'] },
+    { speaker: '장로', speakerEmoji: '👴', lines: ['...그래, 잘 싸웠다. 하지만 {닉네임}아, 뱀의 말이 전부 거짓은 아니었느니라.', '언젠가 알게 되리라. 자, 다음 마을로 가거라.'] },
   ]},
   { villageId: 2, type: 'enter', scenes: [
-    { speaker: '꽃지기', speakerEmoji: '🌸', lines: ['어머, 여행자! 아니... 혹시 당신이 그 말씀의 전사 {닉네임}?', '이 동산을 좀 봐요. 예전엔 온통 꽃이었는데, 어둠이 스며든 뒤로 벌레들이 꽃을 갉아먹기 시작했어요.', '빛의 조각이 사라지자 곤충들이 거대해지고 흉폭해졌죠. 부탁이에요, 이곳의 빛을 되찾아주세요.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['꽃이 시들고 벌레가 꽃을 갉아먹고 있다고? 흠, 안됐지만 내가 해결해줄게.'] },
+    { speaker: '꽃지기', speakerEmoji: '🌸', lines: ['고마워요, {닉네임}. 하지만... 왜 이런 일이 생긴 건지 생각해본 적 있나요?', '아름다운 것을 탐하고, 더 가지려 했던 마음이 이 동산을 병들게 한 거예요.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['그건 여기 사람들 문제잖아요. 저는 그냥 보스만 잡으면 되는 거죠?'] },
   ]},
   { villageId: 3, type: 'enter', scenes: [
-    { speaker: '숲의 파수꾼', speakerEmoji: '🌲', lines: ['{닉네임}, 귀를 막아라! 이 숲의 그림자들은 유혹의 속삭임으로 전사들의 마음을 무너뜨린다.', '여기서 쓰러진 전사가 한둘이 아니다. 모두 조금만 쉬자는 속삭임에 넘어가 다시는 일어나지 못했지.', '하지만 네가 말씀을 입에 담고 있는 한, 그 속삭임은 너를 이기지 못한다. 기억하거라 — 말씀이 곧 방패다.'] },
+    { speaker: '숲의 파수꾼', speakerEmoji: '🌲', lines: ['{닉네임}, 귀를 막아라! 이 숲의 그림자들은 유혹의 속삭임으로 마음을 무너뜨린다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['속삭임? 저는 안 넘어가요. 저 그런 거에 약한 사람 아닙니다.'] },
+    { speaker: '숲의 파수꾼', speakerEmoji: '🌲', lines: ['여기서 쓰러진 전사들도 모두 그렇게 말했다. "나는 다르다"고.', '가장 위험한 것은 자신이 넘어지지 않을 거라는 확신이니라.'] },
   ]},
   { villageId: 4, type: 'enter', scenes: [
-    { speaker: '방랑자', speakerEmoji: '🌫️', lines: ['이곳이 한때 낙원이었다는 걸 믿겠나, {닉네임}?', '빛의 조각이 사라지고... 타락한 천사들이 이곳을 지배하기 시작했지. 사람들은 모두 떠났어. 나만 빼고.', '누군가 와서 이곳을 되살려줄 거라 믿었거든. 그리고... 네가 왔구나.'] },
+    { speaker: '방랑자', speakerEmoji: '🌫️', lines: ['이곳은 실락원. 추방된 자들의 땅이다.', '여기 사는 자들은 모두 에덴에서 쫓겨난 죄인들이지.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['안됐네요. 하지만 저는 죄를 짓지 않았으니까 쫓겨날 일은 없겠죠.'] },
+    { speaker: '방랑자', speakerEmoji: '🌫️', lines: ['...그래? 정말 그렇게 생각하나?', '이 안개가 가리고 있는 건 이 땅만이 아니다. 네 눈도 가려져 있는지 모르겠구나.'] },
   ]},
+  // 2막: 균열
   { villageId: 5, type: 'enter', scenes: [
-    { speaker: '사막의 순례자', speakerEmoji: '🏜️', lines: ['{닉네임}... 여기까지 왔다니. 대단한 전사로구나.', '하지만 여기서부턴 진짜 고난이다. 이 사막은 끝이 없어 보이고, 가시가 살을 찢고, 뜨거운 태양이 의지를 꺾으려 하지.', '기억하거라. 가시밭을 지나지 않으면 꽃밭에 도달할 수 없느니라. 고난이 인내를, 인내가 연단을 만든다.'] },
+    { speaker: '사막의 순례자', speakerEmoji: '🏜️', lines: ['{닉네임}... 여기까지 왔다니. 하지만 여기서부턴 진짜 고난이다.', '가시가 살을 찢고, 뜨거운 태양이 의지를 꺾으려 하지.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['으... 이렇게까지 힘들 줄은 몰랐어. 왜 나한테 이런 시련이 오는 거지?', '나는 잘못한 게 없는데...'] },
+    { speaker: '사막의 순례자', speakerEmoji: '🏜️', lines: ['고난이 오는 이유를 물을 때, 비로소 여정이 시작된다.'] },
   ]},
   { villageId: 6, type: 'enter', scenes: [
-    { speaker: '석공의 유령', speakerEmoji: '🏛️', lines: ['보아라, {닉네임}. 이것이 하늘에 닿으려 했던 자들의 최후다.', '이 탑을 쌓은 자들은 말씀이 아닌 자신의 힘을 믿었지. 우리가 곧 신이 되리라! 하늘을 향해 외쳤으나...', '결국 탑은 무너지고, 서로의 말을 알아듣지 못하게 되었다. 오직 겸손한 자의 말씀만이 이들을 물리칠 수 있느니라.'] },
+    { speaker: '석공의 유령', speakerEmoji: '🏛️', lines: ['보아라, {닉네임}. 이것이 하늘에 닿으려 했던 자들의 최후다.', '이 탑을 쌓은 자들은 말씀이 아닌 자신의 힘을 믿었지.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['자신의 힘을 믿었다고...? 잠깐, 나도 지금까지 내 힘으로 해왔다고 생각했는데...'] },
+    { speaker: '석공의 유령', speakerEmoji: '🏛️', lines: ['깨닫기 시작했구나. 교만의 탑은 항상 무너진다. 네 안에도 이 탑이 세워져 있지 않느냐?'] },
   ]},
   { villageId: 7, type: 'enter', scenes: [
-    { speaker: '재 속의 생존자', speakerEmoji: '🔥', lines: ['냄새가 나지, {닉네임}? 유황 냄새... 수백 년이 지났는데도 사라지지 않아.', '이 도시는 심판받았다. 빛의 조각이 경고했건만 아무도 듣지 않았지.', '이곳에서는 절대 뒤돌아보지 마라. 오직 앞만 보고, 말씀만 붙잡아라.'] },
+    { speaker: '재 속의 생존자', speakerEmoji: '🔥', lines: ['유황 냄새가 나지? 이 도시는 심판받았다. 아무도 경고를 듣지 않았거든.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['심판... 이 사람들이 얼마나 나쁜 짓을 했길래... 잠깐, 만약 심판의 기준이 내 생각보다 높다면...', '...나는 괜찮은 건가?'] },
+    { speaker: '재 속의 생존자', speakerEmoji: '🔥', lines: ['그 질문을 하기 시작한 게 다행이다. 이곳에서는 절대 뒤돌아보지 마라. 오직 앞만 보거라.'] },
   ]},
+  // 3막: 자각
   { villageId: 8, type: 'enter', scenes: [
-    { speaker: '방주의 후손', speakerEmoji: '🌊', lines: ['{닉네임}, 이 뗏목 위로 올라와라. 물에 빠지면 끝이다.', '대홍수가 모든 것을 삼켰다. 하지만 말씀에 순종한 한 사람, 노아는 살아남았지.', '네 방주는 바로 네가 외운 말씀이다. 말씀 위에 서 있는 한, 아무리 깊은 물도 너를 삼키지 못하리라.'] },
+    { speaker: '방주의 후손', speakerEmoji: '🌊', lines: ['대홍수가 모든 것을 삼켰다. 의로운 자가 없었기 때문이지.', '노아만 살아남았는데... 그것도 그의 의로움이 아니라, 하나님의 은혜였다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['은혜? 노아가 의로워서 살아남은 게 아니라고요?'] },
+    { speaker: '방주의 후손', speakerEmoji: '🌊', lines: ['노아가 하나님 앞에 은혜를 입었느니라. 그것이 성경의 기록이다.', '{닉네임}, 너는 지금 방주 안에 있느냐, 밖에 있느냐?'] },
   ]},
   { villageId: 9, type: 'enter', scenes: [
-    { speaker: '광야의 은자', speakerEmoji: '☀️', lines: ['40일... 40년... 이 광야에선 시간도 의미를 잃는다.', '{닉네임}, 여기까지 온 것만으로 대단하다. 하지만 이곳은 지금까지와 다르다.', '예수님도 이 광야에서 시험받으셨다. 그분이 어떻게 이기셨는지 기억하느냐? 말씀으로 이기셨다. 네게도 같은 무기가 있지 않느냐.'] },
+    { speaker: '광야의 은자', speakerEmoji: '☀️', lines: ['예수님도 이 광야에서 시험받으셨다. 그분이 어떻게 이기셨는지 기억하느냐? 말씀으로 이기셨다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['말씀으로... 나도 말씀으로 싸워왔지만... 솔직히 유혹에 흔들릴 때가 있었어.', '나는 예수님처럼 이길 수 없어. 나는... 약해.'] },
+    { speaker: '광야의 은자', speakerEmoji: '☀️', lines: ['네 약함을 인정하는 것, 그것이 시작이다. 강한 척하는 것을 멈출 때 진짜 힘을 찾게 된다.'] },
   ]},
   { villageId: 10, type: 'enter', scenes: [
-    { speaker: '중독된 치료사', speakerEmoji: '☠️', lines: ['{닉네임}이냐... 이 샘물을 마시면... 안 된다...', '이스라엘 백성도 이 앞에서 불평했지. 차라리 이집트에서 죽는 게 나았다고.', '모세가 나무를 물에 던지자 물이 달게 변했다. 그 나무가 바로 말씀이었느니라. 네 말씀으로 이 샘을 정화해다오...'] },
+    { speaker: '중독된 치료사', speakerEmoji: '☠️', lines: ['이스라엘 백성도 이 앞에서 불평했지. 차라리 이집트에서 죽는 게 나았다고.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['하... 나도 솔직히 불평하고 있었어. 왜 이렇게 힘든 거냐고. 이스라엘 백성을 비웃었는데... 나도 똑같구나.', '나도... 죄인이었어. 처음부터.'] },
+    { speaker: '중독된 치료사', speakerEmoji: '☠️', lines: ['그래... 그 고백이 이 쓴 물을 달게 만드는 시작이란다.', '모세가 나무를 물에 던지자 물이 달게 변했다. 그 나무는 말씀이며, 고백이니라.'] },
   ]},
+  // 4막: 구원
   { villageId: 11, type: 'enter', scenes: [
-    { speaker: '하늘의 소리', speakerEmoji: '⛰️', lines: ['{닉네임}아.', '네가 열 개의 빛을 되찾았으니, 이제 너에게 새로운 언약을 세우노라.', '지금까지는 어둠을 물리치는 것이었다. 이제부터는 어둠을 정복하는 것이니라.', '이 산의 불꽃 속에서 네 무기가 단련될 것이다. 두려워하지 말고 올라오너라.'] },
+    { speaker: '하늘의 소리', speakerEmoji: '⛰️', lines: ['{닉네임}아.', '네가 열 개의 빛을 되찾았으나, 네 안의 어둠은 아직 남아있느니라.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['...알아요. 이제 알겠어요. 제 힘으로는 안 된다는 것을.', '저도 죄인이에요. 교만했고, 탐심이 있었고, 유혹에 흔들렸어요. 저를... 구해주세요.'] },
+    { speaker: '하늘의 소리', speakerEmoji: '⛰️', lines: ['네 고백을 들었노라. 이제 너에게 새로운 언약을 세우노라.', '지금까지는 네 힘으로 싸운 줄 알았으나, 이제부터는 내가 너와 함께 싸우리라.', '이 산의 불꽃 속에서 너를 새롭게 하리니, 두려워하지 말고 올라오너라.'] },
   ]},
+  // 5막: 순종의 어려움
   { villageId: 12, type: 'enter', scenes: [
-    { speaker: '정찰병', speakerEmoji: '🏰', lines: ['{닉네임}, 저 성벽을 봐라. 높이가 하늘을 찌르고, 두께가 수레 네 대가 나란히 달릴 만큼이다.', '물리적인 힘으로는 절대 무너지지 않는다. 수많은 전사들이 이 성벽 앞에서 되돌아갔지.', '여호수아가 어떻게 했는지 기억하느냐? 칼이 아니라 믿음의 외침으로 성벽을 무너뜨렸다. 네 말씀이 곧 함성이다!'] },
+    { speaker: '정찰병', speakerEmoji: '🏰', lines: ['{닉네임}, 저 성벽을 봐라. 하나님을 믿는다고 했지만, 순종하는 건 다른 문제다.', '머리로 아는 것과 발로 걷는 것은 다르느니라.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['맞아요... 구원받았다고 느꼈는데, 여전히 제 뜻대로 하려는 제가 있어요.'] },
+    { speaker: '정찰병', speakerEmoji: '🏰', lines: ['여호수아는 칼이 아니라 순종으로 성벽을 무너뜨렸다. 네 불순종의 성벽도 그렇게 무너뜨려야 한다.'] },
   ]},
   { villageId: 13, type: 'enter', scenes: [
-    { speaker: '빛의 잔영', speakerEmoji: '🕳️', lines: ['{닉네임}... 여기는 사망의 음침한 골짜기다.', '아무것도 보이지 않을 것이다. 이곳의 어둠은 네 눈이 아닌 마음을 가리느니라.', '기억하거라. 내가 사망의 음침한 골짜기로 다닐지라도 해를 두려워하지 않을 것은 주께서 나와 함께 하심이라. 말씀이 네 빛이 되어줄 것이다.'] },
+    { speaker: '빛의 잔영', speakerEmoji: '🕳️', lines: ['여기는 사망의 음침한 골짜기다. 아무것도 보이지 않고, 하나님도 느껴지지 않을 것이다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['하나님이... 안 느껴져요. 기도해도 응답이 없는 것 같고... 정말 구원받은 게 맞는 건가요?'] },
+    { speaker: '빛의 잔영', speakerEmoji: '🕳️', lines: ['느낌이 사라져도 진리는 변하지 않는다. 사망의 음침한 골짜기를 다닐지라도, 주께서 함께 하시느니라.', '느낌이 아니라 말씀을 믿어라.'] },
   ]},
   { villageId: 14, type: 'enter', scenes: [
-    { speaker: '고독한 기도자', speakerEmoji: '🌙', lines: ['{닉네임}... 이 밤이 가장 긴 밤이 될 것이다.', '예수님이 이 동산에서 피땀을 흘리며 기도하셨다. 이 잔을 내게서 옮겨주소서... 그러나 내 뜻대로 마시고 아버지의 뜻대로 하옵소서.', '하지만 이 밤을 견디면... 부활의 아침이 온다. 가장 어두운 밤이 지나야 새벽이 오느니라.'] },
+    { speaker: '고독한 기도자', speakerEmoji: '🌙', lines: ['이 밤이 가장 긴 밤이 될 것이다.', '예수님이 이 동산에서 기도하셨다. 이 잔을 내게서 옮겨주소서... 그러나 내 뜻대로 마시고 아버지의 뜻대로 하옵소서.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['내 뜻대로 마시고... 아버지의 뜻대로... 그게 얼마나 어려운 기도인지 이제야 알겠어.', '제 뜻을 내려놓는 게... 이렇게 힘든 거였구나.'] },
   ]},
   { villageId: 15, type: 'enter', scenes: [
-    { speaker: '예언자', speakerEmoji: '💀', lines: ['때가 왔다, {닉네임}.', '일곱 봉인이 풀리고, 일곱 나팔이 울린다. 네 기사가 세상을 짓밟으니 — 전쟁, 기근, 역병, 죽음.', '하지만 기억하거라. 요한계시록의 마지막은 멸망이 아니라 승리다. 끝까지 견디는 자에게 생명의 면류관을 주리라. 견뎌라, {닉네임}!'] },
+    { speaker: '예언자', speakerEmoji: '💀', lines: ['때가 왔다, {닉네임}. 믿음 때문에 오히려 세상이 너를 핍박할 것이다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['믿기 전이 더 편했을까... 아니, 그건 아니야. 힘들어도 이 길이 맞아.', '놓지 않겠어. 끝까지.'] },
+    { speaker: '예언자', speakerEmoji: '💀', lines: ['끝까지 견디는 자에게 생명의 면류관을 주리라. 견뎌라, {닉네임}!'] },
   ]},
   { villageId: 16, type: 'enter', scenes: [
-    { speaker: '대장장이', speakerEmoji: '🔨', lines: ['어서 와라, {닉네임}. 여기까지 온 것은 네가 진짜이기 때문이다.', '금은 불에 넣어야 순금이 된다. 네 말씀도 마찬가지니라.', '시련은 벌이 아니라 축복이다. 자, 불 속으로 들어가거라.'] },
+    { speaker: '대장장이', speakerEmoji: '🔨', lines: ['금은 불에 넣어야 순금이 된다. 네 믿음도 마찬가지니라.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['고난에 의미가 있다는 걸 머리로는 알지만... 아플 때는 정말 힘들어요.', '하지만... 이 불이 저를 태우는 게 아니라 정화하고 있다는 거죠?'] },
+    { speaker: '대장장이', speakerEmoji: '🔨', lines: ['그렇다. 시련은 벌이 아니라 축복이다. 고난이 인내를, 인내가 연단을, 연단이 소망을 만든다.'] },
   ]},
+  // 6막: 성숙과 회복
   { villageId: 17, type: 'enter', scenes: [
-    { speaker: '천사', speakerEmoji: '☁️', lines: ['{닉네임}... 드디어 여기까지 왔구나.', '여기는 하늘과 땅 사이, 구름 위의 세계다. 느껴지느냐? 어둠의 무게가 사라진 이 가벼움을.', '하지만 아직 끝이 아니다. 거의 다 왔다. 소망을 놓지 말거라.'] },
+    { speaker: '천사', speakerEmoji: '☁️', lines: ['{닉네임}... 드디어 여기까지 왔구나. 느껴지느냐? 어둠의 무게가 사라진 이 가벼움을.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['네... 처음으로 소망이 느껴져요. 이 싸움에 끝이 있다는 것을 이제 알아요.', '넘어져도 다시 일어날 수 있다는 것도요.'] },
+    { speaker: '천사', speakerEmoji: '☁️', lines: ['보이지 않는 것을 바라보는 것이 믿음이니라. 거의 다 왔다. 소망을 놓지 말거라.'] },
   ]},
   { villageId: 18, type: 'enter', scenes: [
-    { speaker: '왕의 시종', speakerEmoji: '👑', lines: ['말씀의 전사 {닉네임}! 왕께서 기다리고 계십니다.', '이곳은 천년의 왕국. 왕의 통치 아래 평화가 임한 곳이지요.', '하지만 평화에 속지 마십시오. 왕께서 전하셨습니다 — {닉네임}에게 나의 검을 주어라. 마지막 싸움을 끝낼 자는 그이니라.'] },
+    { speaker: '왕의 시종', speakerEmoji: '👑', lines: ['말씀의 전사 {닉네임}! 왕께서 기다리고 계십니다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['제 삶의 왕이 바뀌었어요. 예전에는 제가 왕이었는데... 이제 제 주인은 저가 아니에요.', '그분의 뜻을 따르겠습니다.'] },
+    { speaker: '왕의 시종', speakerEmoji: '👑', lines: ['왕께서 전하셨습니다 — {닉네임}에게 나의 검을 주어라. 마지막 싸움을 끝낼 자는 그이니라.'] },
   ]},
   { villageId: 19, type: 'enter', scenes: [
-    { speaker: '강의 수호자', speakerEmoji: '💧', lines: ['{닉네임}... 네 얼굴에 그동안의 여정이 새겨져 있구나.', '이 강물에 손을 담가보아라. 모든 상처가 아물고, 모든 피로가 씻겨나간다.', '에덴에서 시작한 그 어린 전사가... 이렇게 성장했구나. 자, 마지막 문이 저기 보인다.'] },
+    { speaker: '강의 수호자', speakerEmoji: '💧', lines: ['{닉네임}... 네 얼굴에 그동안의 여정이 새겨져 있구나.', '이 강물에 손을 담가보아라. 모든 상처가 아물고, 모든 피로가 씻겨나간다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['...따뜻해요. 모든 죄책감, 후회, 아픔이 씻겨나가는 것 같아.', '에덴에서 "나는 괜찮다"고 외치던 제가... 이제는 "주님이 함께하시면 괜찮다"고 말할 수 있어요.'] },
+    { speaker: '강의 수호자', speakerEmoji: '💧', lines: ['옛 것이 지나갔으니 새 것이 되었도다. 자, 마지막 문이 저기 보인다.'] },
   ]},
+  // 7막: 완성
   { villageId: 20, type: 'enter', scenes: [
-    { speaker: '하늘의 소리', speakerEmoji: '✝️', lines: ['{닉네임}아. 여기까지 온 것을 축하하노라.', '에덴의 작은 전사였던 네가 속삭임의 유혹을 이기고, 사막의 고난을 견디며, 겟세마네의 밤을 지나, 대환난을 통과하여 여기까지 왔느니라.', '이제 마지막 어둠을 물리쳐라. 빛의 완성이 기다리고 있다.'] },
+    { speaker: '하늘의 소리', speakerEmoji: '✝️', lines: ['{닉네임}아. 여기까지 온 것을 축하하노라.', '에덴에서 교만했던 네가 사막에서 무릎 꿇고, 시내산에서 구원받고, 겟세마네에서 뜻을 내려놓고, 용광로에서 단련되어 여기까지 왔느니라.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['모든 것이 은혜였어요. 제 힘이 아니었어요.'] },
+    { speaker: '하늘의 소리', speakerEmoji: '✝️', lines: ['이제 마지막 어둠을 물리쳐라. 네 안에 남은 마지막 죄성... 그것마저 빛으로 바꾸리라.'] },
+  ]},
+];
+
+// ===== 마을 진입 컷신 (보스 처치 후 새 마을 해금 시) =====
+export const VILLAGE_ENTER_SCENES: CutsceneData[] = [
+  // 1막: 부정 — 자신감 넘치는 캐릭터
+  { villageId: 2, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['첫 번째 빛의 조각을 되찾은 {닉네임}은 자신감에 차서 다음 마을로 향한다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['하하, 뱀 따위는 상대도 안 됐어! 다음 마을도 금방 해치우겠지!'] },
+    { speaker: '나레이션', speakerEmoji: '🌸', lines: ['달콤한 꽃향기가 바람에 실려온다. 기쁨의 동산은 아직 아름다움이 남아있지만... 어딘가 병들어가고 있다.'] },
+  ]},
+  { villageId: 3, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['동산의 빛을 되찾고 의기양양한 {닉네임}. 하지만 앞에 펼쳐진 숲은 어둡고 깊다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['흥, 유혹의 속삭임? 저는 그런 거에 안 넘어가요. 약한 사람들이나 넘어가는 거죠.'] },
+    { speaker: '나레이션', speakerEmoji: '🌲', lines: ['그러나 숲은 {닉네임}의 자신감 속에 숨어있는 것을 알고 있었다...'] },
+  ]},
+  { villageId: 4, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['숲을 빠져나오자 짙은 안개가 세상을 감싼다. 추방된 자들의 땅, 실락원.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['이 사람들은 죄를 지어서 이렇게 된 거잖아. 나와는 다르지. 나는 괜찮으니까.'] },
+    { speaker: '나레이션', speakerEmoji: '🌫️', lines: ['안개 속에서 알 수 없는 시선이 {닉네임}을 지켜보고 있다. 마치 거울을 보듯이.'] },
+  ]},
+  // 2막: 균열 — 처음으로 흔들리기 시작
+  { villageId: 5, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['실락원의 안개를 뚫고 나오자, 뜨거운 열기와 가시가 {닉네임}을 맞이한다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['으... 이건 지금까지와 다르다. 진짜 아프다. 왜 나한테 이런 일이...'] },
+    { speaker: '나레이션', speakerEmoji: '🏜️', lines: ['처음으로 {닉네임}의 눈에서 자신감이 사라지고, 그 자리에 의문이 피어오른다.'] },
+  ]},
+  { villageId: 6, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['사막을 건너자 하늘을 찌르던 탑의 잔해가 보인다. 무너진 돌기둥이 교만의 무게를 말해준다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['자기 힘으로 하늘에 닿으려 했다가 무너진 탑... 잠깐, 나도 지금까지 내 힘만 믿고 있었던 건 아닐까?'] },
+    { speaker: '나레이션', speakerEmoji: '🏛️', lines: ['{닉네임}의 마음에 처음으로 균열이 생기기 시작한다.'] },
+  ]},
+  { villageId: 7, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['바벨의 파편을 지나자 유황 냄새가 코를 찌른다. 심판받은 도시의 잿더미.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['심판이... 진짜 있었구나. 이 도시 사람들도 처음엔 자기가 괜찮다고 생각했겠지.', '...나는 정말 괜찮은 건가?'] },
+    { speaker: '나레이션', speakerEmoji: '🔥', lines: ['유황의 열기 속에서 {닉네임}은 처음으로 자신에게 질문을 던진다.'] },
+  ]},
+  // 3막: 자각 — 죄인임을 깨달아가는 과정
+  { villageId: 8, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['불길을 뒤로하고 내려가자 거대한 물이 세상을 덮고 있다. 대홍수의 흔적.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['온 세상을 심판한 홍수... 의로운 자가 없었기 때문이라고 했지.', '나는... 의로운 사람일까? 정말?'] },
+    { speaker: '나레이션', speakerEmoji: '🌊', lines: ['{닉네임}의 확신이 물 위의 뗏목처럼 흔들리기 시작한다.'] },
+  ]},
+  { villageId: 9, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['물을 건너자 끝없는 황야가 펼쳐진다. 예수님도 이곳에서 시험받으셨다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['예수님은 말씀으로 유혹을 이기셨는데... 나는 솔직히 흔들렸어. 여러 번.', '나는... 강하지 않아. 인정할 수밖에 없어.'] },
+    { speaker: '나레이션', speakerEmoji: '☀️', lines: ['광야의 열기 속에서 {닉네임}은 자신의 약함을 처음으로 인정한다.'] },
+  ]},
+  { villageId: 10, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['광야를 지나자 쓴 물이 흐르는 샘이 나타난다. 마라의 쓴 샘.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['이스라엘 백성들이 여기서 불평했다고 비웃었는데... 나도 지금 불평하고 있었어.', '나도 똑같은 죄인이었구나... 처음부터.'] },
+    { speaker: '나레이션', speakerEmoji: '☠️', lines: ['쓴 물 앞에서 {닉네임}은 마침내 자신의 민낯과 마주한다.'] },
+  ]},
+  // 4막: 구원 — 전환점
+  { villageId: 11, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['죄인임을 고백한 {닉네임}. 저 멀리 거룩한 불꽃이 타오르는 산이 보인다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['시내산... 하나님이 언약을 세우신 곳. 제 힘으로는 안 된다는 걸 알았어요.', '이제 저를 바꿔주세요.'] },
+    { speaker: '나레이션', speakerEmoji: '⛰️', lines: ['산에서 불꽃이 타오른다. 깨어진 자를 위한 빛이 내려온다.'] },
+  ]},
+  // 5막: 순종의 어려움 — 구원받았지만 여전히 힘든 삶
+  { villageId: 12, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['새 언약을 받은 {닉네임}이 산을 내려온다. 그러나 앞에 거대한 성벽이 가로막는다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['구원받았다고 느꼈는데... 왜 앞길이 여전히 막혀있는 거지?', '아는 것과 실천하는 것은 정말 다르구나.'] },
+    { speaker: '나레이션', speakerEmoji: '🏰', lines: ['구원은 끝이 아니라 시작이었다. 순종의 여정이 지금부터 펼쳐진다.'] },
+  ]},
+  { villageId: 13, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['성벽을 넘자 모든 빛과 소리가 사라진다. 사망의 음침한 골짜기.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['하나님이... 안 느껴져. 기도해도 응답이 없는 것 같아.', '정말 구원받은 게 맞는 건가...?'] },
+    { speaker: '나레이션', speakerEmoji: '🕳️', lines: ['느낌이 사라져도 진리는 변하지 않는다. {닉네임}은 그것을 배워야 한다.'] },
+  ]},
+  { villageId: 14, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['골짜기를 빠져나오자 달빛 아래 올리브 나무들이 서 있다. 겟세마네의 밤.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['내 뜻대로 마시고, 아버지의 뜻대로...', '내 뜻을 내려놓는 것이 이렇게 어려운 줄 몰랐어.'] },
+    { speaker: '나레이션', speakerEmoji: '🌙', lines: ['가장 어두운 밤이 지나야 새벽이 온다. {닉네임}의 가장 긴 밤이 시작된다.'] },
+  ]},
+  { villageId: 15, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['밤이 지나자 하늘이 갈라진다. 세상이 흔들리고 핍박이 몰아친다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['믿음 때문에 오히려 더 힘들어졌어. 하지만... 차라리 믿기 전이 나았다고? 아니야.', '힘들어도 이 길이 맞아. 놓지 않겠어.'] },
+    { speaker: '나레이션', speakerEmoji: '💀', lines: ['{닉네임}의 믿음이 핍박의 바람 속에서도 꺾이지 않는다.'] },
+  ]},
+  { villageId: 16, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['환난을 뚫고 나아가자 용광로의 불빛이 보인다. 뜨거운 열기가 온몸을 감싼다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['이 고통이... 저를 파괴하는 게 아니라 정화하고 있다는 거죠?', '고난이 인내를, 인내가 연단을, 연단이 소망을 만든다... 이제 조금 알 것 같아요.'] },
+    { speaker: '나레이션', speakerEmoji: '🔨', lines: ['{닉네임}은 불 속에서 고난의 의미를 깨달아간다.'] },
+  ]},
+  // 6막: 성숙과 회복
+  { villageId: 17, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['불꽃을 지나자 발아래 구름이 펼쳐진다. 어둠의 무게가 사라진 세계.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['처음으로 소망이 느껴져. 넘어져도 다시 일어날 수 있다는 걸 알아.', '이 싸움에 끝이 있다는 것도.'] },
+    { speaker: '나레이션', speakerEmoji: '☁️', lines: ['구름 위에서 {닉네임}은 보이지 않는 것을 바라보는 법을 배운다.'] },
+  ]},
+  { villageId: 18, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['구름을 헤치고 내려서자 금빛으로 빛나는 왕국이 나타난다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['제 삶의 왕이 바뀌었어요. 예전에는 제가 왕이었는데...', '이제 제 주인은 저가 아니에요. 그분의 뜻을 따르겠습니다.'] },
+    { speaker: '나레이션', speakerEmoji: '👑', lines: ['교만했던 전사가 겸손한 종이 되었다. 왕의 검이 {닉네임}을 기다린다.'] },
+  ]},
+  { villageId: 19, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['왕국을 지나 맑은 강에 도착한다. 수정처럼 투명한 물이 모든 것을 비춘다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['따뜻해요... 모든 죄책감, 후회, 아픔이 씻겨나가는 것 같아.', '에덴에서 "나는 괜찮다"고 외치던 제가... 이제는 "주님이 함께하시면 괜찮다"고 말할 수 있어요.'] },
+    { speaker: '나레이션', speakerEmoji: '💧', lines: ['옛 것이 지나갔으니 새 것이 되었도다. 마지막 문이 앞에 보인다.'] },
+  ]},
+  // 7막: 완성
+  { villageId: 20, type: 'village_enter', scenes: [
+    { speaker: '나레이션', speakerEmoji: '📜', lines: ['생명수의 강을 건너자 눈부신 빛이 세상을 감싼다. 천국의 문 앞에 섰다.'] },
+    { speaker: '{닉네임}', speakerEmoji: '{아바타}', lines: ['여기가... 마지막. 에덴에서 교만하게 시작했던 여정이 여기까지 왔어.', '모든 것이 은혜였어요.'] },
+    { speaker: '나레이션', speakerEmoji: '✝️', lines: ['죄인이었던 전사가 은혜로 이곳까지 왔다. 마지막 어둠이 기다리고 있다.'] },
   ]},
 ];
 
 export const ENDING_SCENES = [
-  { speaker: '나레이션', speakerEmoji: '✨', lines: ['말씀의 빛이... 완성되었다!'] },
-  { speaker: '나레이션', speakerEmoji: '✨', lines: ['말씀의 빛이 세상에 돌아왔다. 어둠은 물러가고, 몬스터들은 사라지며, 마을 사람들이 다시 자유롭게 걸어 다니기 시작했다.', '이 모든 것은 말씀을 마음에 새긴 한 전사, {닉네임} 덕분이었다.'] },
-  { speaker: '시스템', speakerEmoji: '🏆', lines: ['축하합니다! 말씀의 전사 {닉네임}의 여정이 완성되었습니다!', '빛의 조각 [20/20] — 완성!'] },
+  { speaker: '나레이션', speakerEmoji: '✨', lines: ['마지막 어둠이 물러간다. 빛의 조각이 하나로 합쳐지며 눈부신 빛이 세상을 감싼다.'] },
+  { speaker: '나레이션', speakerEmoji: '✨', lines: ['{닉네임}은 기억한다. 에덴에서 "나는 괜찮다"고 외치며 자신만만하게 출발했던 그 날을.'] },
+  { speaker: '나레이션', speakerEmoji: '✨', lines: ['가시의 땅에서 처음 무릎 꿇었고, 바벨에서 교만이 무너졌으며, 소돔에서 심판 앞에 떨었다.', '노아의 심연에서 은혜를 알았고, 광야에서 약함을 인정했으며, 마라의 쓴 샘에서 마침내 고백했다.'] },
+  { speaker: '나레이션', speakerEmoji: '✨', lines: ['"나도 죄인입니다."'] },
+  { speaker: '나레이션', speakerEmoji: '✨', lines: ['시내산에서 구원을 받았으나, 여정은 끝나지 않았다.', '순종하지 못해 넘어지고, 하나님이 안 느껴져 흔들리며, 내 뜻을 내려놓지 못해 괴로워했다.'] },
+  { speaker: '나레이션', speakerEmoji: '✨', lines: ['하지만 {닉네임}은 매번 다시 일어났다. 넘어질 때마다 회개했고, 회개할 때마다 은혜가 더했다.'] },
+  { speaker: '나레이션', speakerEmoji: '✨', lines: ['그리고 마침내, 자기 안의 마지막 어둠까지 빛으로 바꾸고 이곳에 섰다.'] },
+  { speaker: '하늘의 소리', speakerEmoji: '✝️', lines: ['잘 싸웠다, 착하고 충성된 종아.', '네 여정은 네 힘이 아니라 은혜로 완성되었느니라.', '이제 네 주인의 즐거움에 참여할지어다.'] },
+  { speaker: '시스템', speakerEmoji: '🏆', lines: ['축하합니다! {닉네임}의 여정이 완성되었습니다!', '빛의 조각 [20/20] — 완성!', '"이제 내가 사는 것이 아니요 오직 내 안에 그리스도께서 사시는 것이라" — 갈라디아서 2:20'] },
 ];
 
 // ===== 캐릭터 데이터 =====

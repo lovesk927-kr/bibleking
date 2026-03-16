@@ -1,3 +1,58 @@
+/* 디버그 패널 */
+.debug-panel {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.debug-panel-inner {
+  background: #1a1a2e;
+  border: 2px solid #ffd700;
+  border-radius: 12px;
+  padding: 24px;
+  min-width: 320px;
+  color: #fff;
+}
+.debug-panel-inner h3 {
+  color: #ffd700;
+  margin-bottom: 12px;
+}
+.debug-panel-inner p {
+  margin-bottom: 12px;
+  color: #ccc;
+}
+.debug-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.debug-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+.debug-row input {
+  width: 100px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #222;
+  color: #fff;
+  font-size: 14px;
+}
+.debug-buttons {
+  display: flex;
+  gap: 8px;
+}
+.debug-buttons .btn {
+  font-size: 13px;
+  padding: 8px 16px;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -1191,6 +1246,31 @@ body {
 
 .answer-text {
   color: #ccc;
+}
+
+/* ===== 레벨업 배너 ===== */
+.levelup-banner {
+  text-align: center;
+  margin: 8px 0 4px;
+  animation: levelup-pop 0.5s ease-out;
+}
+.levelup-congrats {
+  font-size: 18px;
+  color: #ffd700;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+.levelup-levels {
+  font-size: 28px;
+  font-weight: bold;
+  color: #fff;
+  margin-top: 4px;
+  letter-spacing: 2px;
+}
+@keyframes levelup-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 /* ===== 보상 상자 ===== */
@@ -4076,6 +4156,24 @@ body {
   max-width: 400px;
 }
 
+.boss-exit-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.5);
+  color: #ff8888;
+  border: 1px solid #ff4444;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.boss-exit-btn:hover {
+  background: rgba(255, 0, 0, 0.3);
+  color: #fff;
+}
+
 .boss-start-btn {
   font-size: 18px;
   padding: 14px 40px;
@@ -4090,6 +4188,7 @@ body {
 
 /* 전투 중 */
 .boss-playing {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 12px;
