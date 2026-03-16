@@ -107,6 +107,41 @@ export function ClientApiProvider({ client, children }: { client: NetworkClient;
     onGiftNotification: () => {},
     removeGiftNotificationListener: () => {},
 
+    // 보스
+    getBossClears: (characterId) => client.send('boss:getClears', characterId),
+    checkBossReady: (villageId) => client.send('boss:checkReady', villageId),
+    getBossQuestion: (data) => client.send('boss:getQuestion', data),
+    bossAttack: (data) => client.send('boss:attack', data),
+    startBossBattle: (data) => client.send('boss:startBattle', data),
+    completeBoss: (data) => client.send('boss:complete', data),
+
+    // 컷신
+    getPrologueSeen: (characterId) => client.send('cutscene:getPrologueSeen', characterId),
+    setPrologueSeen: (characterId) => client.send('cutscene:setPrologueSeen', characterId),
+    getCutsceneSeen: (data) => client.send('cutscene:getSeen', data),
+    setCutsceneSeen: (data) => client.send('cutscene:setSeen', data),
+
+    // 업데이트 (클라이언트에서는 사용 안함)
+    onUpdateStatus: () => {},
+    removeUpdateListener: () => {},
+
+    // PvP 전적
+    getPvpRecord: (name) => client.send('pvp:getRecord', name),
+
+    // PvP 절 범위
+    networkSetPvpVerseRange: () => Promise.resolve(false),
+    networkGetPvpVerseRange: () => Promise.resolve({ startVerse: 1, endVerse: 32 }),
+    networkSetPvpEasyMode: () => Promise.resolve(false),
+
+    // 디버그
+    debugSetLevel: () => Promise.resolve(false),
+
+    // DB 초기화
+    adminClearDb: () => Promise.resolve(false),
+
+    // 구절 번호
+    getVerseNumbers: () => client.send('recite:getVerseNumbers'),
+
     // 파일 내보내기/가져오기 (클라이언트에서는 사용 안함 - 더미)
     exportVerses: () => Promise.resolve({ success: false, error: 'Client mode' }),
     importVerses: () => Promise.resolve({ success: false, error: 'Client mode' }),

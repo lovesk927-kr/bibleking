@@ -85,6 +85,43 @@ export interface BattleResult {
   monsterEmoji: string;
 }
 
+export interface BossBattleState {
+  bossVillageId: number;
+  bossName: string;
+  bossEmoji: string;
+  bossTitle: string;
+  bossHp: number;
+  bossMaxHp: number;
+  bossAttack: number;
+  playerHp: number;
+  playerMaxHp: number;
+  playerAttack: number;
+  playerDefense: number;
+  playerEvasion: number;
+  round: number;
+  phase: 'intro' | 'playing' | 'victory' | 'defeat';
+  log: string[];
+  currentQuestion: BlankQuestion | null;
+  timeLimit: number;
+}
+
+export interface BlankQuestion {
+  verseNumber: number;
+  verseContent: string;
+  words: string[];
+  blankIndices: number[];
+  answers: string[];
+}
+
+export interface BossBattleResult {
+  victory: boolean;
+  villageId: number;
+  bossName: string;
+  bossEmoji: string;
+  reward: Item | null;
+  lightFragment: number; // 현재 빛의 조각 수
+}
+
 export interface NetworkPlayerInfo {
   id: string;
   characterId: number;
@@ -152,6 +189,19 @@ declare global {
       importVerses: () => Promise<{ success: boolean; error?: string }>;
       exportCharacter: (characterId: number) => Promise<{ success: boolean; path?: string; error?: string }>;
       importCharacter: () => Promise<{ success: boolean; characterId?: number; error?: string }>;
+      // 보스
+      getBossClears: (characterId: number) => Promise<number[]>;
+      checkBossReady: (villageId: number) => Promise<{ ready: boolean; message?: string }>;
+      getBossQuestion: (data: { villageId: number; reciteMode: number }) => Promise<BlankQuestion>;
+      bossAttack: (data: { characterId: number; villageId: number; correct: boolean }) => Promise<{
+        bossHp: number; playerHp: number; damage: number; dodged: boolean; log: string;
+      }>;
+      startBossBattle: (data: { characterId: number; villageId: number }) => Promise<BossBattleState>;
+      completeBoss: (data: { characterId: number; villageId: number }) => Promise<BossBattleResult>;
+      getPrologueSeen: (characterId: number) => Promise<boolean>;
+      setPrologueSeen: (characterId: number) => Promise<boolean>;
+      getCutsceneSeen: (data: { characterId: number; villageId: number; type: string }) => Promise<boolean>;
+      setCutsceneSeen: (data: { characterId: number; villageId: number; type: string }) => Promise<boolean>;
       // 업데이트
       onUpdateStatus: (callback: (event: any, data: any) => void) => void;
       removeUpdateListener: () => void;

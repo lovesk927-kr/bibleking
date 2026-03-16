@@ -13,10 +13,12 @@ export function CharacterDetail({ character, onBack, onCharacterUpdate }: Props)
   const [stats, setStats] = useState<CharacterStats | null>(null);
   const [reciteMode, setReciteMode] = useState(character.recite_mode);
   const [exportMessage, setExportMessage] = useState('');
+  const [lightFragments, setLightFragments] = useState(0);
   const { api } = useApi();
 
   useEffect(() => {
     api.getCharacterStats(character.id).then(setStats);
+    api.getBossClears(character.id).then((clears: number[]) => setLightFragments(clears.length));
   }, [character.id]);
 
   const handleExport = async () => {
@@ -121,6 +123,16 @@ export function CharacterDetail({ character, onBack, onCharacterUpdate }: Props)
             <span className="recite-mode-option-name">백지 모드</span>
             <span className="recite-mode-boost">EXP +20%</span>
           </div>
+        </div>
+      </div>
+
+      <div className="light-fragment-section">
+        <div className="light-fragment-header">
+          <div className="detail-section-title">빛의 조각</div>
+          <span className="light-fragment-count">{lightFragments} / 20</span>
+        </div>
+        <div className="light-fragment-bar">
+          <div className="light-fragment-fill" style={{ width: `${(lightFragments / 20) * 100}%` }} />
         </div>
       </div>
 

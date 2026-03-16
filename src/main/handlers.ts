@@ -1,4 +1,5 @@
 import { queryAll, queryOne, run, getDb, saveDb } from './db';
+import { calcBaseStats, calcEquipBonuses, calcEnhanceBonus, calcWinRate, calcLevelUp, normalizeAnswer, calcReciteExp, calcItemStatBonus, calcEnhanceSuccessRate, calcSynthStatBonus, calcBossStats } from './game-logic';
 
 // 핸들러 맵: 채널 이름 → 핸들러 함수
 export type HandlerMap = Record<string, (data: any) => any>;
@@ -895,7 +896,298 @@ export function createHandlers(): HandlerMap {
     return true;
   };
 
+  // ===== 보스 시스템 =====
+
+  // 보스 데이터 (constants.ts와 동일 구조)
+  const BOSS_DATA: Record<number, { name: string; emoji: string; title: string; quizRange: [number, number] }> = {
+    1: { name: '타락한 뱀', emoji: '🐍', title: '에덴의 지배자', quizRange: [1, 1] },
+    2: { name: '여왕벌레 플로라', emoji: '🦟', title: '동산의 포식자', quizRange: [1, 2] },
+    3: { name: '그림자 속삭이는 자', emoji: '👤', title: '유혹의 화신', quizRange: [1, 3] },
+    4: { name: '타락천사 아자젤', emoji: '😈', title: '실락원의 군주', quizRange: [1, 5] },
+    5: { name: '사막의 폭군 스콜피온', emoji: '🦂', title: '가시 사막의 왕', quizRange: [1, 7] },
+    6: { name: '교만의 거인 니므롯', emoji: '🗿', title: '바벨의 망령', quizRange: [1, 8] },
+    7: { name: '유황의 화신', emoji: '🌋', title: '소돔의 불꽃', quizRange: [1, 10] },
+    8: { name: '심연의 리바이어던', emoji: '🐋', title: '대홍수의 괴수', quizRange: [1, 12] },
+    9: { name: '광야의 시험자', emoji: '👁️', title: '유혹의 그림자', quizRange: [1, 13] },
+    10: { name: '독의 어머니 마라', emoji: '🧪', title: '저주의 근원', quizRange: [1, 15] },
+    11: { name: '금송아지의 우상', emoji: '🐂', title: '거짓 신', quizRange: [1, 17] },
+    12: { name: '여리고의 철벽장군', emoji: '🛡️', title: '난공불락의 수호자', quizRange: [1, 18] },
+    13: { name: '공포의 군주 골리앗', emoji: '⚔️', title: '어둠의 거인', quizRange: [1, 20] },
+    14: { name: '배신자의 그림자', emoji: '💰', title: '은 서른 냥의 유혹', quizRange: [1, 22] },
+    15: { name: '묵시록의 네 기사', emoji: '🏇', title: '종말의 선봉대', quizRange: [1, 24] },
+    16: { name: '용광로의 불꽃 드래곤', emoji: '🐉', title: '혼돈의 용', quizRange: [1, 25] },
+    17: { name: '하늘의 방해자', emoji: '🦅', title: '공중 권세', quizRange: [1, 27] },
+    18: { name: '거짓 왕', emoji: '🤴', title: '왕좌의 사칭자', quizRange: [1, 29] },
+    19: { name: '오염자 아바돈', emoji: '🦠', title: '멸망의 천사', quizRange: [1, 30] },
+    20: { name: '어둠의 왕', emoji: '👿', title: '모든 어둠의 근원', quizRange: [1, 32] },
+  };
+
+  // 마을별 해금 레벨 (constants.ts VILLAGES와 동일)
+  const VILLAGE_LEVEL_REQ: Record<number, number> = {
+    1: 1, 2: 10, 3: 20, 4: 30, 5: 40, 6: 50, 7: 60, 8: 70, 9: 80, 10: 90,
+    11: 100, 12: 110, 13: 120, 14: 130, 15: 140, 16: 150, 17: 160, 18: 170, 19: 180, 20: 190,
+  };
+
+  // 보스전 상태를 메모리에 보관 (캐릭터당 1개)
+  const bossBattleStates: Record<number, {
+    villageId: number; bossHp: number; bossMaxHp: number; bossAttack: number;
+    playerHp: number; playerMaxHp: number; playerAttack: number; playerDefense: number; playerEvasion: number;
+    round: number;
+  }> = {};
+
+  handlers['boss:getClears'] = (characterId: number) => {
+    const rows = queryAll('SELECT village_id FROM boss_clears WHERE character_id = ?', [characterId]);
+    return rows.map((r: any) => r.village_id);
+  };
+
+  handlers['boss:checkReady'] = (villageId: number) => {
+    const boss = BOSS_DATA[villageId];
+    if (!boss) return { ready: false, message: '보스 데이터가 없습니다.' };
+    const [startVerse, endVerse] = boss.quizRange;
+    // 출제에 필요한 구절이 DB에 있는지 확인
+    const verses = queryAll(
+      'SELECT verse_number FROM verses WHERE verse_number >= ? AND verse_number <= ? AND blank_template != ""',
+      [startVerse, endVerse]
+    );
+    if (verses.length === 0) {
+      return { ready: false, message: '아직 준비되지 않은 전투입니다.' };
+    }
+    return { ready: true };
+  };
+
+  handlers['boss:startBattle'] = (data: { characterId: number; villageId: number }) => {
+    const character = queryOne('SELECT * FROM characters WHERE id = ?', [data.characterId]);
+    if (!character) return null;
+
+    const boss = BOSS_DATA[data.villageId];
+    if (!boss) return null;
+
+    // 플레이어 스탯 계산 (장비 반영)
+    const stats = handlers['character:getStats'](data.characterId);
+    const playerAttack = stats.totalAttack;
+    const playerDefense = stats.totalDefense;
+    const playerHp = stats.totalHp;
+    const playerEvasion = stats.totalEvasion;
+
+    // 보스 HP = 플레이어 공격력 × 10 (최소 10라운드 보장)
+    const bossMaxHp = Math.max(100, playerAttack * 10);
+    // 보스 공격력: 플레이어 HP의 약 1/5 ~ 1/3 (장비에 따라 5~7번 정도 버틸 수 있도록)
+    const bossAttack = Math.max(10, Math.floor(playerHp / 4));
+
+    const state = {
+      villageId: data.villageId,
+      bossHp: bossMaxHp,
+      bossMaxHp,
+      bossAttack,
+      playerHp,
+      playerMaxHp: playerHp,
+      playerAttack,
+      playerDefense,
+      playerEvasion,
+      round: 0,
+    };
+    bossBattleStates[data.characterId] = state;
+
+    return {
+      bossVillageId: data.villageId,
+      bossName: boss.name,
+      bossEmoji: boss.emoji,
+      bossTitle: boss.title,
+      bossHp: state.bossHp,
+      bossMaxHp: state.bossMaxHp,
+      bossAttack: state.bossAttack,
+      playerHp: state.playerHp,
+      playerMaxHp: state.playerMaxHp,
+      playerAttack: state.playerAttack,
+      playerDefense: state.playerDefense,
+      playerEvasion: state.playerEvasion,
+      round: 0,
+      phase: 'intro',
+      log: [],
+      currentQuestion: null,
+      timeLimit: 40,
+    };
+  };
+
+  handlers['boss:getQuestion'] = (data: { villageId: number; reciteMode: number }) => {
+    const boss = BOSS_DATA[data.villageId];
+    if (!boss) return null;
+
+    const [startVerse, endVerse] = boss.quizRange;
+    const verses = queryAll(
+      'SELECT * FROM verses WHERE verse_number >= ? AND verse_number <= ? AND blank_template != ""',
+      [startVerse, endVerse]
+    );
+    if (verses.length === 0) return null;
+
+    // 랜덤 구절 선택
+    const verse = verses[Math.floor(Math.random() * verses.length)];
+
+    // 보스전은 항상 빈칸 1개 모드 (PvP와 동일 - 띄어쓰기 기준 한 단어를 비움)
+    const content = verse.content as string;
+    const words = content.replace(/\s+/g, ' ').split(' ');
+    const blankIdx = Math.floor(Math.random() * words.length);
+
+    return {
+      verseNumber: verse.verse_number,
+      verseContent: content,
+      words,
+      blankIndices: [blankIdx],
+      answers: [words[blankIdx]],
+    };
+  };
+
+  handlers['boss:attack'] = (data: { characterId: number; villageId: number; correct: boolean }) => {
+    const state = bossBattleStates[data.characterId];
+    if (!state) return { bossHp: 0, playerHp: 0, damage: 0, dodged: false, log: '전투 상태가 없습니다.' };
+
+    state.round++;
+    let log = '';
+
+    if (data.correct) {
+      // 정답: 플레이어가 보스 공격
+      const damage = state.playerAttack;
+      state.bossHp = Math.max(0, state.bossHp - damage);
+      log = `⚔️ ${state.round}턴: 정답! 보스에게 ${damage} 데미지!`;
+    } else {
+      // 오답: 보스가 플레이어 공격 (회피 판정)
+      const evasionRate = Math.min(30, state.playerEvasion);
+      const dodged = Math.random() * 100 < evasionRate;
+      if (dodged) {
+        log = `🛡️ ${state.round}턴: 오답... 하지만 공격을 회피했다!`;
+      } else {
+        const rawDamage = state.bossAttack - state.playerDefense;
+        const damage = Math.max(1, rawDamage);
+        state.playerHp = Math.max(0, state.playerHp - damage);
+        log = `💥 ${state.round}턴: 오답! 보스의 공격! ${damage} 데미지를 받았다!`;
+      }
+    }
+
+    return {
+      bossHp: state.bossHp,
+      playerHp: state.playerHp,
+      damage: data.correct ? state.playerAttack : 0,
+      dodged: false,
+      log,
+    };
+  };
+
+  handlers['boss:complete'] = (data: { characterId: number; villageId: number }) => {
+    // 보스 클리어 기록
+    const db = getDb();
+    db.run(
+      'INSERT OR IGNORE INTO boss_clears (character_id, village_id) VALUES (?, ?)',
+      [data.characterId, data.villageId]
+    );
+    saveDb();
+
+    // 보스 전투 상태 제거
+    delete bossBattleStates[data.characterId];
+
+    // 신화 등급 아이템 보상 생성
+    const character = queryOne('SELECT * FROM characters WHERE id = ?', [data.characterId]);
+    const level = character ? character.level : 1;
+    const reward = generateMythicItem(level);
+
+    // 아이템 DB 저장
+    db.run(
+      'INSERT INTO items (name, description, type, stat_type, stat_bonus, rarity, level_req) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [reward.name, reward.description, reward.type, reward.stat_type, reward.stat_bonus, 'mythic', level]
+    );
+    saveDb();
+    const itemRow = queryOne('SELECT last_insert_rowid() as id');
+    const itemId = itemRow.id;
+    db.run(
+      'INSERT INTO character_items (character_id, item_id, is_equipped, enhance_level) VALUES (?, ?, 0, 0)',
+      [data.characterId, itemId]
+    );
+    saveDb();
+
+    // 현재 빛의 조각 수
+    const clears = queryAll('SELECT village_id FROM boss_clears WHERE character_id = ?', [data.characterId]);
+    const lightFragment = clears.length;
+
+    const savedItem = queryOne(`
+      SELECT i.*, ci.id as ci_id, ci.is_equipped, ci.enhance_level
+      FROM items i JOIN character_items ci ON i.id = ci.item_id
+      WHERE i.id = ?`, [itemId]);
+
+    return {
+      victory: true,
+      villageId: data.villageId,
+      bossName: BOSS_DATA[data.villageId]?.name || '보스',
+      bossEmoji: BOSS_DATA[data.villageId]?.emoji || '👿',
+      reward: savedItem,
+      lightFragment,
+    };
+  };
+
+  // 컷신 관련
+  handlers['cutscene:getPrologueSeen'] = (characterId: number) => {
+    const row = queryOne(
+      "SELECT id FROM cutscene_seen WHERE character_id = ? AND village_id = 0 AND type = 'prologue'",
+      [characterId]
+    );
+    return !!row;
+  };
+
+  handlers['cutscene:setPrologueSeen'] = (characterId: number) => {
+    const db = getDb();
+    db.run(
+      "INSERT OR IGNORE INTO cutscene_seen (character_id, village_id, type) VALUES (?, 0, 'prologue')",
+      [characterId]
+    );
+    saveDb();
+    return true;
+  };
+
+  handlers['cutscene:getSeen'] = (data: { characterId: number; villageId: number; type: string }) => {
+    const row = queryOne(
+      'SELECT id FROM cutscene_seen WHERE character_id = ? AND village_id = ? AND type = ?',
+      [data.characterId, data.villageId, data.type]
+    );
+    return !!row;
+  };
+
+  handlers['cutscene:setSeen'] = (data: { characterId: number; villageId: number; type: string }) => {
+    const db = getDb();
+    db.run(
+      'INSERT OR IGNORE INTO cutscene_seen (character_id, village_id, type) VALUES (?, ?, ?)',
+      [data.characterId, data.villageId, data.type]
+    );
+    saveDb();
+    return true;
+  };
+
   return handlers;
+}
+
+// 신화 등급 아이템 생성 (보스 보상용)
+function generateMythicItem(level: number) {
+  const types = ['weapon', 'belt', 'chest', 'shoes', 'shield', 'helmet'];
+  const type = types[Math.floor(Math.random() * types.length)];
+
+  const mythicNames: Record<string, string> = {
+    weapon: '성령의 검',
+    belt: '진리의 허리띠',
+    chest: '의의 호심경',
+    shoes: '복음의 신',
+    shield: '믿음의 방패',
+    helmet: '구원의 투구',
+  };
+
+  const name = mythicNames[type];
+  const statType = type === 'weapon' ? 'attack' : type === 'shield' ? 'defense' : type === 'shoes' ? 'evasion' : type === 'belt' ? 'hp' : ['attack', 'defense', 'hp'][Math.floor(Math.random() * 3)];
+  const rarityMultiplier = 5.0;
+  const statBonus = statType === 'evasion'
+    ? Math.floor((1 + Math.floor(level / 15)) * rarityMultiplier)
+    : Math.floor((10 + level * 5) * rarityMultiplier);
+
+  return {
+    name,
+    description: `신화 등급 장비. ${statType === 'attack' ? '공격력' : statType === 'defense' ? '방어력' : statType === 'evasion' ? '회피율' : '체력'} +${statBonus}`,
+    type, stat_type: statType, stat_bonus: statBonus, rarity: 'mythic', level_req: level,
+  };
 }
 
 function generateCharacterDescription(type: number): string {

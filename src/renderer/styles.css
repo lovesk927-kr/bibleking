@@ -3883,3 +3883,606 @@ body {
   border-radius: 4px;
   transition: width 0.3s ease;
 }
+
+/* ===== 보스 준비 버튼 ===== */
+.btn-boss-ready {
+  background: linear-gradient(135deg, #ff4444, #cc0000) !important;
+  color: #fff !important;
+  animation: bossButtonPulse 1.5s infinite;
+  font-weight: bold;
+  border: 2px solid #ff6666 !important;
+}
+
+@keyframes bossButtonPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(255, 68, 68, 0.7); }
+}
+
+/* ===== 컷신 ===== */
+.cutscene-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 100%);
+}
+
+.cutscene-title {
+  font-size: 20px;
+  color: #ffd700;
+  text-align: center;
+  margin-bottom: 16px;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+.cutscene-progress-bar {
+  width: 100%;
+  max-width: 500px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  margin-bottom: 40px;
+  overflow: hidden;
+}
+
+.cutscene-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffd700, #ff9800);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.cutscene-box {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 560px;
+  width: 100%;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cutscene-speaker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cutscene-speaker-emoji {
+  font-size: 28px;
+}
+
+.cutscene-speaker-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.cutscene-dialogue {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #e0e0e0;
+  white-space: pre-wrap;
+}
+
+.cutscene-next-btn {
+  margin-top: 24px;
+  align-self: center;
+  min-width: 160px;
+}
+
+/* ===== 보스 전투 ===== */
+.boss-battle {
+  padding: 16px 20px;
+}
+
+/* 인트로 */
+.boss-intro {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.boss-shake {
+  animation: bossShake 0.6s ease-in-out;
+}
+
+@keyframes bossShake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-8px); }
+  20% { transform: translateX(8px); }
+  30% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  50% { transform: translateX(-4px); }
+  60% { transform: translateX(4px); }
+  70% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+}
+
+.boss-intro-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  transition: background 0.5s ease;
+}
+
+.boss-darken {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.boss-intro-appear {
+  text-align: center;
+  animation: bossAppear 0.8s ease-out;
+}
+
+@keyframes bossAppear {
+  0% { transform: scale(3); opacity: 0; }
+  60% { transform: scale(0.9); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.boss-intro-emoji {
+  font-size: 80px;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.5));
+}
+
+.boss-intro-title {
+  font-size: 14px;
+  color: #ff4444;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.boss-intro-name {
+  font-size: 36px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+}
+
+.boss-intro-dialogue {
+  margin-top: 32px;
+  text-align: center;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.boss-intro-dialogue p {
+  font-size: 16px;
+  color: #ccc;
+  font-style: italic;
+  margin-bottom: 24px;
+  max-width: 400px;
+}
+
+.boss-start-btn {
+  font-size: 18px;
+  padding: 14px 40px;
+  background: linear-gradient(135deg, #ff4444, #cc0000);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(255, 68, 68, 0); }
+}
+
+/* 전투 중 */
+.boss-playing {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.boss-info-section {
+  background: linear-gradient(135deg, rgba(255, 0, 0, 0.15), rgba(100, 0, 0, 0.2));
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.boss-hit-shake {
+  animation: bossHitShake 0.4s ease-in-out;
+}
+
+@keyframes bossHitShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
+}
+
+.boss-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.boss-battle-emoji {
+  font-size: 36px;
+  filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.4));
+}
+
+.boss-name-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.boss-title-small {
+  font-size: 11px;
+  color: #ff6666;
+  letter-spacing: 2px;
+}
+
+.boss-name-text {
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.boss-hp-bar-container {
+  position: relative;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.boss-hp-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #ff4444, #ff0000);
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.boss-hp-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* 플레이어 */
+.player-info-section {
+  background: linear-gradient(135deg, rgba(0, 100, 255, 0.15), rgba(0, 50, 150, 0.2));
+  border: 1px solid rgba(68, 136, 255, 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.player-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.player-battle-emoji {
+  font-size: 28px;
+}
+
+.player-name-text {
+  font-size: 16px;
+  font-weight: bold;
+  color: #88bbff;
+}
+
+.player-hp-bar-container {
+  position: relative;
+  height: 16px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.player-hp-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #44aaff, #2277ff);
+  border-radius: 8px;
+  transition: width 0.5s ease;
+}
+
+.player-hp-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 11px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* 문제 영역 */
+.boss-question-area {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  flex: 1;
+}
+
+.boss-question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.boss-round {
+  font-size: 14px;
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.boss-timer {
+  font-size: 16px;
+  font-weight: bold;
+  color: #88ff88;
+  transition: color 0.3s;
+}
+
+.boss-timer-urgent {
+  color: #ff4444;
+  animation: timerBlink 0.5s infinite;
+}
+
+@keyframes timerBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.boss-verse-display {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.boss-verse-ref {
+  font-size: 13px;
+  color: #aaa;
+}
+
+.boss-verse-content {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #e0e0e0;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 8px;
+  min-height: 60px;
+}
+
+.boss-blank-word {
+  color: #ffd700;
+  font-weight: bold;
+  border-bottom: 2px dashed #ffd700;
+  padding: 0 2px;
+}
+
+.boss-answer-box {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.boss-wrong-shake {
+  animation: wrongShake 0.4s ease-in-out;
+}
+
+@keyframes wrongShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  50% { transform: translateX(8px); }
+  75% { transform: translateX(-4px); }
+}
+
+.boss-answer-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.boss-answer-input:focus {
+  border-color: #ffd700;
+}
+
+.boss-answer-correct {
+  border-color: #44ff44;
+  background: rgba(0, 255, 0, 0.1);
+}
+
+.boss-submit-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+/* 전투 로그 */
+.boss-battle-log {
+  max-height: 120px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+.boss-log-entry {
+  font-size: 13px;
+  color: #aaa;
+  padding: 4px 8px;
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 승리 */
+.boss-victory {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.boss-victory-overlay {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.boss-victory-emoji {
+  font-size: 64px;
+  animation: victorySpin 1s ease-out;
+}
+
+@keyframes victorySpin {
+  from { transform: rotate(0deg) scale(0); }
+  to { transform: rotate(360deg) scale(1); }
+}
+
+.boss-victory-title {
+  font-size: 36px;
+  color: #ffd700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.boss-defeat-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+}
+
+.boss-defeat-emoji {
+  font-size: 32px;
+  opacity: 0.6;
+}
+
+.boss-defeat-line p {
+  color: #aaa;
+  font-style: italic;
+  font-size: 14px;
+}
+
+.boss-light-fragment {
+  font-size: 18px;
+  color: #ffd700;
+  padding: 12px 24px;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  animation: glowPulse 2s infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+}
+
+/* 패배 */
+.boss-defeat {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.boss-defeat-overlay {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.boss-defeat-big-emoji {
+  font-size: 64px;
+  opacity: 0.8;
+}
+
+.boss-defeat-title {
+  font-size: 32px;
+  color: #ff4444;
+}
+
+.boss-defeat-taunt {
+  color: #888;
+  font-style: italic;
+  font-size: 14px;
+}
+
+/* 빛의 조각 진행도 */
+.light-fragment-section {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.05));
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 8px;
+}
+
+.light-fragment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.light-fragment-count {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.light-fragment-bar {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.light-fragment-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffd700, #ff9800);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}

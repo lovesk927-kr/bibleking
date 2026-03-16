@@ -19,14 +19,17 @@ import { HostLobby } from './pages/HostLobby';
 import { ClientConnect } from './pages/ClientConnect';
 import { ClientLobby } from './pages/ClientLobby';
 import { PvpBattle } from './pages/PvpBattle';
+import { BossBattle } from './pages/BossBattle';
+import { Cutscene } from './pages/Cutscene';
 import { LocalApiProvider, HostApiProvider, ClientApiProvider, useApi } from './api-context';
-import { VILLAGES, type Village } from './constants';
+import { VILLAGES, PROLOGUE_SCENES, VILLAGE_CUTSCENES, ENDING_SCENES, getBossForVillage, type Village } from './constants';
 import { NetworkClient } from './network-client';
 import type {
   Character,
   Monster,
   ReciteResult as ReciteResultType,
   BattleResult as BattleResultType,
+  BossBattleResult,
   Item,
 } from './types';
 
@@ -41,7 +44,9 @@ type GamePage =
   | 'inventory'
   | 'rewardBox'
   | 'characterDetail'
-  | 'training';
+  | 'training'
+  | 'bossBattle'
+  | 'cutscene';
 
 // 공통 게임 플레이 컴포넌트 (로컬/호스트/클라이언트 공용)
 function GamePlay({ character: initialCharacter, onBack, isNetworkMode }: {
@@ -62,6 +67,9 @@ function GamePlay({ character: initialCharacter, onBack, isNetworkMode }: {
   });
   const [unlockedVillage, setUnlockedVillage] = useState<Village | null>(null);
   const [preBattleLevel, setPreBattleLevel] = useState(0);
+  const [cutsceneData, setCutsceneData] = useState<{ scenes: any[]; title?: string; onComplete: () => void } | null>(null);
+  const [bossVillageId, setBossVillageId] = useState(0);
+  const [bossReward, setBossReward] = useState<Item | null>(null);
 
   const { api } = useApi();
   const navigate = (p: GamePage) => setPage(p);
@@ -82,6 +90,100 @@ function GamePlay({ character: initialCharacter, onBack, isNetworkMode }: {
   const handleVillageUnlockClose = () => {
     setUnlockedVillage(null);
     navigate('main');
+  };
+
+  // 암송 버튼 클릭 시: 보스전 조건 확인
+  const handleReciteClick = async () => {
+    const bossClears = await api.getBossClears(character.id);
+
+    // 보스 미클리어 마을 중 다음 마을 레벨을 충족한 곳 찾기 (가장 낮은 마을부터)
+    for (const village of VILLAGES) {
+      const boss = getBossForVillage(village.id);
+      if (!boss) continue;
+      if (bossClears.includes(village.id)) continue; // 이미 클리어
+
+      // 다음 마을 레벨 요구치를 충족하면 보스전 진입
+      const nextVillage = VILLAGES.find(v => v.id === village.id + 1);
+      const reachedNextLevel = nextVillage ? character.level >= nextVillage.levelReq : character.level >= village.levelReq;
+      if (!reachedNextLevel) break; // 레벨 부족이면 이후 마을도 불가
+
+      // 보스전 컷신 확인
+      const enterCutscene = VILLAGE_CUTSCENES.find(c => c.villageId === village.id && c.type === 'enter');
+      const enterSeen = await api.getCutsceneSeen({ characterId: character.id, villageId: village.id, type: 'boss_enter' });
+
+      if (enterCutscene && !enterSeen) {
+        setCutsceneData({
+          scenes: enterCutscene.scenes,
+          title: `${village.name} - 보스 등장`,
+          onComplete: async () => {
+            await api.setCutsceneSeen({ characterId: character.id, villageId: village.id, type: 'boss_enter' });
+            setBossVillageId(village.id);
+            navigate('bossBattle');
+          },
+        });
+        navigate('cutscene');
+      } else {
+        setBossVillageId(village.id);
+        navigate('bossBattle');
+      }
+      return;
+    }
+
+    navigate('monsterEncounter');
+  };
+
+  const handleBossComplete = async (result: BossBattleResult) => {
+    const updated = await api.getCharacter(character.id);
+    if (updated) setCharacter(updated);
+
+    if (result.victory) {
+      // 보스 클리어 컷신
+      const clearCutscene = VILLAGE_CUTSCENES.find(c => c.villageId === result.villageId && c.type === 'clear');
+      if (clearCutscene) {
+        setCutsceneData({
+          scenes: clearCutscene.scenes,
+          title: '보스 처치!',
+          onComplete: () => {
+            if (result.reward) {
+              setBossReward(result.reward);
+              setRewards([result.reward]);
+              navigate('rewardBox');
+            } else {
+              navigate('main');
+            }
+          },
+        });
+        navigate('cutscene');
+      } else if (result.reward) {
+        setRewards([result.reward]);
+        navigate('rewardBox');
+      } else {
+        navigate('main');
+      }
+
+      // 마지막 보스 클리어 시 엔딩
+      if (result.villageId === 20) {
+        const allClears = await api.getBossClears(character.id);
+        if (allClears.length >= 20) {
+          // 보상 후 엔딩 표시
+          const showEnding = () => {
+            setCutsceneData({
+              scenes: ENDING_SCENES,
+              title: '엔딩',
+              onComplete: () => navigate('main'),
+            });
+            navigate('cutscene');
+          };
+          // 보상이 있으면 보상 후 엔딩, 없으면 바로 엔딩
+          if (!result.reward) {
+            showEnding();
+            return;
+          }
+        }
+      }
+    } else {
+      navigate('main');
+    }
   };
 
   const handleSelectVillage = (villageId: number) => { setSelectedVillageId(villageId); navigate('monsterEncounter'); };
@@ -135,7 +237,7 @@ function GamePlay({ character: initialCharacter, onBack, isNetworkMode }: {
   return (
     <>
       {page === 'main' && (
-        <MainScreen character={character} onRecite={() => navigate('monsterEncounter')} onTraining={() => navigate('training')} onInventory={() => navigate('inventory')} onDetail={() => navigate('characterDetail')} onBack={onBack} isNetworkMode={isNetworkMode} />
+        <MainScreen character={character} onRecite={handleReciteClick} onTraining={() => navigate('training')} onInventory={() => navigate('inventory')} onDetail={() => navigate('characterDetail')} onBack={onBack} isNetworkMode={isNetworkMode} />
       )}
       {page === 'villageUnlock' && unlockedVillage && <VillageUnlock village={unlockedVillage} onClose={handleVillageUnlockClose} />}
       {page === 'villageSelect' && <VillageSelect character={character} onSelect={handleSelectVillage} onBack={() => navigate('monsterEncounter')} />}
@@ -147,6 +249,18 @@ function GamePlay({ character: initialCharacter, onBack, isNetworkMode }: {
       {page === 'training' && <TrainingMode character={character} onBack={() => navigate('main')} />}
       {page === 'characterDetail' && <CharacterDetail character={character} onBack={() => navigate('main')} onCharacterUpdate={setCharacter} />}
       {page === 'inventory' && <Inventory character={character} onBack={() => navigate('main')} />}
+      {page === 'bossBattle' && (
+        <BossBattle character={character} villageId={bossVillageId} onComplete={handleBossComplete} onBack={() => navigate('main')} />
+      )}
+      {page === 'cutscene' && cutsceneData && (
+        <Cutscene
+          scenes={cutsceneData.scenes}
+          characterName={character.name}
+          characterType={character.character_type}
+          onComplete={cutsceneData.onComplete}
+          title={cutsceneData.title}
+        />
+      )}
     </>
   );
 }
@@ -271,12 +385,25 @@ function LocalApp({ onHostMode, onClientConnected }: {
   onHostMode: () => void;
   onClientConnected: (client: NetworkClient) => void;
 }) {
-  type LocalPage = 'characterSelect' | 'characterCreate' | 'game' | 'adminLogin' | 'admin' | 'networkSelect' | 'clientConnect';
+  type LocalPage = 'characterSelect' | 'characterCreate' | 'game' | 'adminLogin' | 'admin' | 'networkSelect' | 'clientConnect' | 'prologue';
   const [page, setPage] = useState<LocalPage>('characterSelect');
   const [character, setCharacter] = useState<Character | null>(null);
 
-  const handleSelectCharacter = (c: Character) => {
+  const handleSelectCharacter = async (c: Character) => {
     setCharacter(c);
+    // 프롤로그 체크
+    const seen = await window.api.getPrologueSeen(c.id);
+    if (!seen) {
+      setPage('prologue');
+    } else {
+      setPage('game');
+    }
+  };
+
+  const handlePrologueComplete = async () => {
+    if (character) {
+      await window.api.setPrologueSeen(character.id);
+    }
     setPage('game');
   };
 
@@ -293,6 +420,15 @@ function LocalApp({ onHostMode, onClientConnected }: {
         />
       )}
       {page === 'characterCreate' && <CharacterCreate onComplete={handleSelectCharacter} onBack={() => setPage('characterSelect')} />}
+      {page === 'prologue' && character && (
+        <Cutscene
+          scenes={PROLOGUE_SCENES}
+          characterName={character.name}
+          characterType={character.character_type}
+          onComplete={handlePrologueComplete}
+          title="프롤로그"
+        />
+      )}
       {page === 'game' && character && (
         <GamePlay character={character} onBack={() => setPage('characterSelect')} isNetworkMode={false} />
       )}

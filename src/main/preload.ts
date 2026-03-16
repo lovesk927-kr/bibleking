@@ -90,6 +90,18 @@ contextBridge.exposeInMainWorld('api', {
   networkGiftItem: (data: { targetPlayerId: string; characterId: number; item: any }) => ipcRenderer.invoke('network:giftItem', data),
   networkGiftConsumable: (data: { targetPlayerId: string; characterId: number; type: string; quantity: number }) => ipcRenderer.invoke('network:giftConsumable', data),
 
+  // 보스
+  getBossClears: (characterId: number) => ipcRenderer.invoke('boss:getClears', characterId),
+  checkBossReady: (villageId: number) => ipcRenderer.invoke('boss:checkReady', villageId),
+  getBossQuestion: (data: { villageId: number; reciteMode: number }) => ipcRenderer.invoke('boss:getQuestion', data),
+  bossAttack: (data: { characterId: number; villageId: number; correct: boolean }) => ipcRenderer.invoke('boss:attack', data),
+  startBossBattle: (data: { characterId: number; villageId: number }) => ipcRenderer.invoke('boss:startBattle', data),
+  completeBoss: (data: { characterId: number; villageId: number }) => ipcRenderer.invoke('boss:complete', data),
+  getPrologueSeen: (characterId: number) => ipcRenderer.invoke('cutscene:getPrologueSeen', characterId),
+  setPrologueSeen: (characterId: number) => ipcRenderer.invoke('cutscene:setPrologueSeen', characterId),
+  getCutsceneSeen: (data: { characterId: number; villageId: number; type: string }) => ipcRenderer.invoke('cutscene:getSeen', data),
+  setCutsceneSeen: (data: { characterId: number; villageId: number; type: string }) => ipcRenderer.invoke('cutscene:setSeen', data),
+
   // DB 초기화
   adminClearDb: () => ipcRenderer.invoke('admin:clearDb'),
 

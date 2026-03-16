@@ -161,6 +161,28 @@ function createTables() {
     )
   `);
 
+  db.run(`
+    CREATE TABLE IF NOT EXISTS boss_clears (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      character_id INTEGER NOT NULL,
+      village_id INTEGER NOT NULL,
+      cleared_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(character_id, village_id),
+      FOREIGN KEY (character_id) REFERENCES characters(id)
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS cutscene_seen (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      character_id INTEGER NOT NULL,
+      village_id INTEGER NOT NULL DEFAULT 0,
+      type TEXT NOT NULL DEFAULT 'prologue',
+      UNIQUE(character_id, village_id, type),
+      FOREIGN KEY (character_id) REFERENCES characters(id)
+    )
+  `);
+
   // 첫 실행 시 기본 암송 데이터 삽입 (시편 119편 1~32절)
   seedDefaultVerses();
 }
