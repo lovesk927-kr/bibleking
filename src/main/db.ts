@@ -60,6 +60,22 @@ export function run(sql: string, params: any[] = []) {
   saveDb();
 }
 
+// Helper: read a game setting
+export function getSetting(key: string, defaultValue: string): string {
+  const row = queryOne("SELECT value FROM game_settings WHERE key = ?", [key]);
+  return row ? row.value : defaultValue;
+}
+
+// Helper: write a game setting (upsert)
+export function saveSetting(key: string, value: string) {
+  const existing = queryOne("SELECT id FROM game_settings WHERE key = ?", [key]);
+  if (existing) {
+    run("UPDATE game_settings SET value = ? WHERE key = ?", [value, key]);
+  } else {
+    run("INSERT INTO game_settings (key, value) VALUES (?, ?)", [key, value]);
+  }
+}
+
 function createTables() {
   db.run(`
     CREATE TABLE IF NOT EXISTS verses (
