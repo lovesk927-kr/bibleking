@@ -41,9 +41,12 @@ export function TrainingMode({ character, onBack }: Props) {
   }, []);
 
   // 페이지 로드 후 첫 입력칸 포커스 + 창 포커스 복귀 시 복구
+  const restoringFocusRef = useRef(false);
   useEffect(() => {
     if (loading) return;
     const focusFirst = () => {
+      // F5 정답보기 복구 중이면 무시 (별도 복구 로직 사용)
+      if (restoringFocusRef.current) return;
       if (isBlankMode) {
         const first = blankOrderRef.current[0];
         if (first) blankRefs.current[`${first.verseNumber}-${first.blankIndex}`]?.focus();
@@ -76,28 +79,15 @@ export function TrainingMode({ character, onBack }: Props) {
         e.preventDefault();
         doGrade();
       }
+      if (e.key === 'F10') {
+        e.preventDefault();
+        doReset();
+      }
     };
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.key === 'F5') {
         e.preventDefault();
         setShowAnswers(false);
-        // 정답 보기 해제 후 마지막 포커스 위치 + 커서 위치 복구
-        const restoreFocus = () => {
-          let target: HTMLInputElement | HTMLTextAreaElement | null = null;
-          if (isBlankMode && lastFocusRef.current) {
-            target = blankRefs.current[lastFocusRef.current] || null;
-          } else if (lastVerseRef.current !== null) {
-            target = document.querySelector<HTMLTextAreaElement>(`textarea[data-verse="${lastVerseRef.current}"]`);
-          }
-          if (target) {
-            target.focus();
-            const pos = lastCursorPos.current;
-            target.setSelectionRange(pos, pos);
-          }
-        };
-        window.api?.focusWindow?.().then(() => {
-          setTimeout(restoreFocus, 50);
-        });
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -107,6 +97,33 @@ export function TrainingMode({ character, onBack }: Props) {
       window.removeEventListener('keyup', handleKeyUp);
     };
   }, [verses, answers, blankAnswers]);
+
+  // showAnswers가 false로 바뀌면 (F5 뗐을 때) 렌더링 후 포커스 복구
+  const prevShowAnswers = useRef(showAnswers);
+  useEffect(() => {
+    if (prevShowAnswers.current && !showAnswers) {
+      // focusFirst 리스너가 개입하지 않도록 플래그 설정
+      restoringFocusRef.current = true;
+      const restoreFocus = () => {
+        let target: HTMLInputElement | HTMLTextAreaElement | null = null;
+        if (isBlankMode && lastFocusRef.current) {
+          target = blankRefs.current[lastFocusRef.current] || null;
+        } else if (lastVerseRef.current !== null) {
+          target = document.querySelector<HTMLTextAreaElement>(`textarea[data-verse="${lastVerseRef.current}"]`);
+        }
+        if (target) {
+          target.focus();
+          const pos = lastCursorPos.current;
+          target.setSelectionRange(pos, pos);
+        }
+        restoringFocusRef.current = false;
+      };
+      window.api?.focusWindow?.().then(() => {
+        requestAnimationFrame(restoreFocus);
+      });
+    }
+    prevShowAnswers.current = showAnswers;
+  }, [showAnswers]);
 
   const normalize = (s: string) => s.replace(/[\s,.!?;:'"''""·\u3000]/g, '');
 
@@ -175,6 +192,31 @@ export function TrainingMode({ character, onBack }: Props) {
   const clearGrade = () => {
     setGraded(false);
     setGradeResult({});
+  };
+
+  const doReset = () => {
+    const resetAnswers: Record<number, string> = {};
+    const resetBlanks: Record<number, string[]> = {};
+    for (const v of verses) {
+      resetAnswers[v.verse_number] = '';
+      if (isBlankMode && v.blank_template) {
+        const blankCount = v.blank_template.split('x').length - 1;
+        resetBlanks[v.verse_number] = new Array(blankCount).fill('');
+      }
+    }
+    setAnswers(resetAnswers);
+    setBlankAnswers(resetBlanks);
+    clearGrade();
+    // 첫 번째 입력칸에 포커스
+    setTimeout(() => {
+      if (isBlankMode) {
+        const first = blankOrderRef.current[0];
+        if (first) blankRefs.current[`${first.verseNumber}-${first.blankIndex}`]?.focus();
+      } else {
+        const el = document.querySelector<HTMLTextAreaElement>('textarea.verse-input');
+        el?.focus();
+      }
+    }, 50);
   };
 
   const loadQuiz = async () => {
@@ -331,7 +373,7 @@ export function TrainingMode({ character, onBack }: Props) {
     <div className="page recite-quiz recite-quiz-layout">
       <div className="recite-quiz-scroll">
         <h1 className="title">📝 트레이닝 모드</h1>
-        <p className="subtitle">F5: 정답 보기 | F9: 채점</p>
+        <p className="subtitle">F5: 정답 보기 | F9: 채점 | F10: 초기화</p>
 
         {showAnswers && (
           <div className="training-answer-indicator">정답 표시 중...</div>
