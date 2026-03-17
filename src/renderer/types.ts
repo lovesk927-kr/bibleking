@@ -150,6 +150,7 @@ declare global {
       updateReciteMode: (data: { characterId: number; reciteMode: number }) => Promise<boolean>;
       deleteCharacter: (id: number) => Promise<boolean>;
       getQuiz: () => Promise<Verse[]>;
+      getQuizRange: (data: { startVerse: number; endVerse: number }) => Promise<Verse[]>;
       submitRecite: (data: { characterId: number; answers: { verse_number: number; answer: string }[] }) => Promise<ReciteResult>;
       getRandomMonster: (data: { characterLevel: number; villageId: number }) => Promise<Monster>;
       fight: (data: { characterId: number; monsterId: number; monster: Monster; scorePercent: number }) => Promise<BattleResult>;

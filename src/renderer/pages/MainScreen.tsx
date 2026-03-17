@@ -6,13 +6,14 @@ interface Props {
   character: Character;
   onRecite: () => void;
   onTraining: () => void;
+  onTraining2: () => void;
   onInventory: () => void;
   onDetail: () => void;
   onBack: () => void;
   isNetworkMode?: boolean;
 }
 
-export function MainScreen({ character, onRecite, onTraining, onInventory, onDetail, onBack, isNetworkMode }: Props) {
+export function MainScreen({ character, onRecite, onTraining, onTraining2, onInventory, onDetail, onBack, isNetworkMode }: Props) {
   const expPercent = (character.exp / character.max_exp) * 100;
   const [showContact, setShowContact] = useState(false);
   const [bossReady, setBossReady] = useState<{ name: string; emoji: string } | null>(null);
@@ -64,6 +65,10 @@ export function MainScreen({ character, onRecite, onTraining, onInventory, onDet
         </button>
         <button className="btn btn-game btn-training" onClick={onTraining}>
           📝 트레이닝
+        </button>
+        <button className="btn btn-game btn-training2" onClick={onTraining2}>
+          📖 트레이닝 2
+          <span className="btn-new-badge">NEW</span>
         </button>
         <button className={`btn btn-game ${bossReady ? 'btn-boss-ready' : 'btn-recite'}`} onClick={onRecite}>
           {bossReady ? `${bossReady.emoji} 보스 전투! — ${bossReady.name}` : '⚔️ 전투 시작'}

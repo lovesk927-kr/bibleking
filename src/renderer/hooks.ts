@@ -27,12 +27,17 @@ export function useInputFocus<T extends HTMLInputElement | HTMLTextAreaElement =
   };
 
   useEffect(() => {
-    // 마운트 시 윈도우 포커스 강제 복구 + input 포커스
-    window.api?.focusWindow?.().then(() => {
-      setTimeout(() => ref.current?.focus(), 50);
-    });
-    // 백업: focusWindow 없는 환경 대비
-    const timer = setTimeout(() => ref.current?.focus(), 150);
+    // 마운트 시 input 포커스 시도, 실패 시에만 윈도우 포커스 복구
+    const timer = setTimeout(() => {
+      if (ref.current) {
+        ref.current.focus();
+        if (document.activeElement !== ref.current) {
+          window.api?.focusWindow?.().then(() => {
+            setTimeout(() => ref.current?.focus(), 50);
+          });
+        }
+      }
+    }, 50);
 
     const onWindowFocus = () => {
       setTimeout(() => ref.current?.focus(), 50);

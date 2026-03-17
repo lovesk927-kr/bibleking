@@ -55,10 +55,17 @@ export function TrainingMode({ character, onBack }: Props) {
         el?.focus();
       }
     };
-    // 윈도우 포커스 복구 후 입력칸 포커스 (IME 한글 유지)
-    window.api?.focusWindow?.().then(() => {
-      setTimeout(focusFirst, 50);
-    });
+    // 입력칸 포커스 시도, 실패 시에만 윈도우 포커스 복구
+    setTimeout(() => {
+      focusFirst();
+      // 포커스가 안 잡혔으면 윈도우 포커스 복구
+      const active = document.activeElement;
+      if (!active || (active.tagName !== 'INPUT' && active.tagName !== 'TEXTAREA')) {
+        window.api?.focusWindow?.().then(() => {
+          setTimeout(focusFirst, 50);
+        });
+      }
+    }, 50);
     window.addEventListener('focus', focusFirst);
     return () => window.removeEventListener('focus', focusFirst);
   }, [loading]);
@@ -118,8 +125,15 @@ export function TrainingMode({ character, onBack }: Props) {
         }
         restoringFocusRef.current = false;
       };
-      window.api?.focusWindow?.().then(() => {
-        requestAnimationFrame(restoreFocus);
+      requestAnimationFrame(() => {
+        restoreFocus();
+        // 포커스 안 잡혔으면 윈도우 포커스 복구
+        const active = document.activeElement;
+        if (!active || (active.tagName !== 'INPUT' && active.tagName !== 'TEXTAREA')) {
+          window.api?.focusWindow?.().then(() => {
+            requestAnimationFrame(restoreFocus);
+          });
+        }
       });
     }
     prevShowAnswers.current = showAnswers;

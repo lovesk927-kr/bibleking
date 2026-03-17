@@ -23,6 +23,7 @@ contextBridge.exposeInMainWorld('api', {
   submitRecite: (data: { characterId: number; answers: { verse_number: number; answer: string }[] }) => ipcRenderer.invoke('recite:submit', data),
 
   getVerseNumbers: () => ipcRenderer.invoke('recite:getVerseNumbers'),
+  getQuizRange: (data: { startVerse: number; endVerse: number }) => ipcRenderer.invoke('recite:getQuizRange', data),
 
   // 몬스터/전투
   getRandomMonster: (data: { characterLevel: number; villageId: number }) => ipcRenderer.invoke('monster:random', data),

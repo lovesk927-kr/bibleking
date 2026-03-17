@@ -14,6 +14,7 @@ import { AdminPanel } from './pages/AdminPanel';
 import { RewardBox } from './pages/RewardBox';
 import { CharacterDetail } from './pages/CharacterDetail';
 import { TrainingMode } from './pages/TrainingMode';
+import { TrainingMode2 } from './pages/TrainingMode2';
 import { NetworkModeSelect } from './pages/NetworkModeSelect';
 import { HostLobby } from './pages/HostLobby';
 import { ClientConnect } from './pages/ClientConnect';
@@ -45,6 +46,7 @@ type GamePage =
   | 'rewardBox'
   | 'characterDetail'
   | 'training'
+  | 'training2'
   | 'bossBattle'
   | 'cutscene';
 
@@ -332,7 +334,7 @@ function GamePlay({ character: initialCharacter, onBack, isNetworkMode }: {
         </div>
       )}
       {page === 'main' && (
-        <MainScreen character={character} onRecite={handleReciteClick} onTraining={() => navigate('training')} onInventory={() => navigate('inventory')} onDetail={() => navigate('characterDetail')} onBack={onBack} isNetworkMode={isNetworkMode} />
+        <MainScreen character={character} onRecite={handleReciteClick} onTraining={() => navigate('training')} onTraining2={() => navigate('training2')} onInventory={() => navigate('inventory')} onDetail={() => navigate('characterDetail')} onBack={onBack} isNetworkMode={isNetworkMode} />
       )}
       {page === 'villageUnlock' && unlockedVillage && <VillageUnlock village={unlockedVillage} onClose={handleVillageUnlockClose} />}
       {page === 'villageSelect' && <VillageSelect character={character} onSelect={handleSelectVillage} onBack={() => navigate('monsterEncounter')} />}
@@ -342,6 +344,7 @@ function GamePlay({ character: initialCharacter, onBack, isNetworkMode }: {
       {page === 'battle' && battleResult && <BattleScreen battleResult={battleResult} onClose={handleBattleClose} />}
       {page === 'rewardBox' && <RewardBox rewards={rewards} onClose={handleRewardClose} levelUp={rewardLevelUp || undefined} />}
       {page === 'training' && <TrainingMode character={character} onBack={() => navigate('main')} />}
+      {page === 'training2' && <TrainingMode2 character={character} onBack={() => navigate('main')} />}
       {page === 'characterDetail' && <CharacterDetail character={character} onBack={() => navigate('main')} onCharacterUpdate={setCharacter} />}
       {page === 'inventory' && <Inventory character={character} onBack={() => navigate('main')} />}
       {page === 'bossBattle' && (

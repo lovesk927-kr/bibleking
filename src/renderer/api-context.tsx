@@ -60,6 +60,7 @@ export function ClientApiProvider({ client, children }: { client: NetworkClient;
 
     // 암송
     getQuiz: () => client.send('recite:getQuiz'),
+    getQuizRange: (data) => client.send('recite:getQuizRange', data),
     submitRecite: (data) => client.send('recite:submit', data),
 
     // 몬스터/전투
