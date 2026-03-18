@@ -111,6 +111,7 @@ export interface BlankQuestion {
   words: string[];
   blankIndices: number[];
   answers: string[];
+  mode?: 'fullBlank' | 'blank';
 }
 
 export interface BossBattleResult {
@@ -131,6 +132,108 @@ export interface NetworkPlayerInfo {
   isHost: boolean;
   easyMode?: boolean;
   team?: 'blue' | 'red';
+}
+
+// ===== 로그라이크 타입 =====
+
+export interface RoguelikeRunState {
+  room: number;
+  villageId: number;
+  villageKillCount: number;
+  playerHp: number;
+  playerMaxHp: number;
+  playerAttack: number;
+  playerDefense: number;
+  gold: number;
+  combo: number;
+  maxCombo: number;
+  monstersKilled: number;
+  hitsTaken: number;
+  maxGoldHeld: number;
+  elitesKilled: number;
+  activeBuffs: { id: string; name: string; description: string }[];
+  roomType: 'battle' | 'elite' | 'shop' | 'event' | 'buff_select' | 'path_select' | 'run_end' | 'boss_battle';
+  monster: RoguelikeMonster | null;
+  usedRevive: boolean;
+  bonusStars: number;
+}
+
+export interface RoguelikeMonster {
+  name: string;
+  emoji: string;
+  level: number;
+  hp: number;
+  maxHp: number;
+  attack: number;
+  defense: number;
+  isElite: boolean;
+  exp_reward: number;
+}
+
+export interface RoguelikeQuestion {
+  verseTexts: string[];
+  verseRef: string;
+  words: string[];
+  blankIndices: number[];
+  blankGroups: number[][];
+  answers: string[];
+  timeLimit: number;
+  blankCount: number;
+}
+
+export interface RoguelikeTurnResult {
+  playerHp: number;
+  playerMaxHp: number;
+  playerAttack?: number;
+  playerDefense?: number;
+  monsterHp: number;
+  monsterMaxHp: number;
+  damage: number;
+  isPlayerAttack: boolean;
+  combo: number;
+  comboMultiplier: number;
+  log: string;
+  monsterDefeated: boolean;
+  playerDead: boolean;
+  goldEarned: number;
+  expEarned: number;
+  itemDrop: Item | null;
+  leveledUp: boolean;
+  newLevel?: number;
+}
+
+export interface RoguelikeShopInfo {
+  items: { id: string; name: string; description: string; cost: number; discountedCost: number }[];
+  gold: number;
+}
+
+export interface RoguelikeEventInfo {
+  id: string;
+  name: string;
+  description: string;
+  choices: { label: string; cost?: string }[];
+}
+
+export interface RoguelikeRunEnd {
+  roomReached: number;
+  starsEarned: number;
+  totalStars: number;
+  monstersKilled: number;
+  maxCombo: number;
+  newAchievements: { id: string; name: string; reward: number }[];
+  itemsKept: number;
+}
+
+export interface RoguelikePermanentState {
+  stars: number;
+  upgrades: { type: string; level: number; name: string; maxLevel: number; cost: number; description: string }[];
+  achievements: { id: string; name: string; description: string; unlocked: boolean; reward: number }[];
+  bestRoom: number;
+  totalMonstersKilled: number;
+  bestCombo: number;
+  totalRuns: number;
+  unlockedStartBuffs: { id: string; name: string; description: string }[];
+  startBuffSlots: number;
 }
 
 declare global {
@@ -203,6 +306,25 @@ declare global {
       setPrologueSeen: (characterId: number) => Promise<boolean>;
       getCutsceneSeen: (data: { characterId: number; villageId: number; type: string }) => Promise<boolean>;
       setCutsceneSeen: (data: { characterId: number; villageId: number; type: string }) => Promise<boolean>;
+      // 로그라이크
+      roguelikeGetState: (characterId: number) => Promise<RoguelikePermanentState>;
+      roguelikeStartRun: (data: { characterId: number; startBuffs: string[]; villageId: number }) => Promise<RoguelikeRunState>;
+      roguelikeChoosePath: (data: { characterId: number; choice: 'left' | 'right' }) => Promise<RoguelikeRunState>;
+      roguelikeGetQuestion: (data: { characterId: number; reciteMode: number }) => Promise<RoguelikeQuestion>;
+      roguelikeSubmitAnswer: (data: { characterId: number; answer: string }) => Promise<{ correct: boolean; filledIndices: number[]; remainingBlanks: number }>;
+      roguelikeCompleteTurn: (data: { characterId: number; allCorrect: boolean }) => Promise<RoguelikeTurnResult>;
+      roguelikeShopInfo: (characterId: number) => Promise<RoguelikeShopInfo>;
+      roguelikeShopBuy: (data: { characterId: number; shopItemId: string }) => Promise<{ success: boolean; message: string; gold: number; playerHp: number; playerMaxHp: number; playerAttack: number; playerDefense: number }>;
+      roguelikeEventInfo: (characterId: number) => Promise<RoguelikeEventInfo>;
+      roguelikeEventChoice: (data: { characterId: number; choiceIndex: number }) => Promise<{ result: string; runState: RoguelikeRunState; statChanges?: { label: string; before: number; after: number }[] }>;
+      roguelikeSelectBuff: (data: { characterId: number; buffId: string }) => Promise<RoguelikeRunState>;
+      roguelikeGetBuffChoices: (characterId: number) => Promise<{ id: string; name: string; description: string }[]>;
+      roguelikeEliteChoice: (data: { characterId: number; fight: boolean }) => Promise<RoguelikeRunState>;
+      roguelikeEndRun: (characterId: number) => Promise<RoguelikeRunEnd>;
+      roguelikeUpgrade: (data: { characterId: number; upgradeType: string }) => Promise<{ success: boolean; message: string; state: RoguelikePermanentState }>;
+      roguelikeBossComplete: (data: { characterId: number; villageId: number; victory: boolean }) => Promise<{ runState: RoguelikeRunState; bossVictory: boolean; reward: Item | null; finalVictory?: boolean }>;
+      roguelikeDebugBoss: (characterId: number) => Promise<RoguelikeRunState | null>;
+      roguelikeDebugEvent: (characterId: number) => Promise<RoguelikeRunState | null>;
       // 업데이트
       onUpdateStatus: (callback: (event: any, data: any) => void) => void;
       removeUpdateListener: () => void;

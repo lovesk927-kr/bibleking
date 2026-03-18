@@ -386,7 +386,7 @@ export function TrainingMode({ character, onBack }: Props) {
   return (
     <div className="page recite-quiz recite-quiz-layout">
       <div className="recite-quiz-scroll">
-        <h1 className="title">📝 트레이닝 모드</h1>
+        <h1 className="title">📝 트레이닝(시험)</h1>
         <p className="subtitle">F5: 정답 보기 | F9: 채점 | F10: 초기화</p>
 
         {showAnswers && (

@@ -42,7 +42,7 @@ export function createBossHandlers(): HandlerMap {
     const stats = getCharacterTotalStats(data.characterId);
     if (!stats) return null;
 
-    const { bossMaxHp, bossAttack } = calcBossStats(stats.totalAttack, stats.totalHp);
+    const { bossMaxHp, bossAttack } = calcBossStats(stats.totalAttack, stats.totalHp, data.villageId);
 
     const state = {
       villageId: data.villageId,
@@ -69,7 +69,7 @@ export function createBossHandlers(): HandlerMap {
 
     const [startVerse, endVerse] = boss.quizRange;
     const verses = queryAll(
-      'SELECT * FROM verses WHERE verse_number >= ? AND verse_number <= ? AND blank_template != ""',
+      'SELECT * FROM verses WHERE verse_number >= ? AND verse_number <= ? AND content != ""',
       [startVerse, endVerse]
     );
     if (verses.length === 0) return null;
@@ -77,12 +77,34 @@ export function createBossHandlers(): HandlerMap {
     const verse = verses[Math.floor(Math.random() * verses.length)];
     const content = verse.content as string;
     const words = content.replace(/\s+/g, ' ').split(' ');
-    const blankIdx = Math.floor(Math.random() * words.length);
 
-    return {
-      verseNumber: verse.verse_number, verseContent: content,
-      words, blankIndices: [blankIdx], answers: [words[blankIdx]],
-    };
+    if (data.reciteMode === 0) {
+      // 주관식: 첫 두 글자 + 랜덤 한 단어를 힌트로 보여줌
+      const hint = content.substring(0, 2);
+      let hintWordIdx = -1;
+      if (words.length > 2) {
+        hintWordIdx = 1 + Math.floor(Math.random() * (words.length - 2));
+      }
+      return {
+        verseNumber: verse.verse_number, verseContent: content,
+        words, blankIndices: [], answers: [],
+        mode: 'fullBlank', hint, hintWordIdx,
+      };
+    } else {
+      // 빈칸 채우기: 트레이닝 모드와 동일 (글자 단위, blank_template 기반)
+      const template = (verse.blank_template as string) || '';
+      const answers: string[] = [];
+      for (let i = 0; i < template.length; i++) {
+        if (template[i] === 'x') {
+          answers.push(content[i] || '');
+        }
+      }
+      return {
+        verseNumber: verse.verse_number, verseContent: content,
+        words, blankIndices: [], answers,
+        mode: 'blank', blankTemplate: template,
+      };
+    }
   };
 
   handlers['boss:attack'] = (data: { characterId: number; villageId: number; correct: boolean }) => {

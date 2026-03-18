@@ -199,6 +199,52 @@ function createTables() {
     )
   `);
 
+  // 로그라이크 테이블
+  db.run(`
+    CREATE TABLE IF NOT EXISTS roguelike_records (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      character_id INTEGER NOT NULL UNIQUE,
+      stars INTEGER NOT NULL DEFAULT 0,
+      best_room INTEGER NOT NULL DEFAULT 0,
+      total_monsters_killed INTEGER NOT NULL DEFAULT 0,
+      best_combo INTEGER NOT NULL DEFAULT 0,
+      total_runs INTEGER NOT NULL DEFAULT 0,
+      FOREIGN KEY (character_id) REFERENCES characters(id)
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS roguelike_upgrades (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      character_id INTEGER NOT NULL,
+      upgrade_type TEXT NOT NULL,
+      level INTEGER NOT NULL DEFAULT 0,
+      UNIQUE(character_id, upgrade_type),
+      FOREIGN KEY (character_id) REFERENCES characters(id)
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS roguelike_achievements (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      character_id INTEGER NOT NULL,
+      achievement_id TEXT NOT NULL,
+      unlocked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(character_id, achievement_id),
+      FOREIGN KEY (character_id) REFERENCES characters(id)
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS roguelike_unlocks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      character_id INTEGER NOT NULL,
+      unlock_type TEXT NOT NULL,
+      UNIQUE(character_id, unlock_type),
+      FOREIGN KEY (character_id) REFERENCES characters(id)
+    )
+  `);
+
   // 첫 실행 시 기본 암송 데이터 삽입 (시편 119편 1~32절)
   seedDefaultVerses();
 }

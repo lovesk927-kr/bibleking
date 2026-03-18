@@ -159,9 +159,10 @@ export function calcSynthStatBonus(statType: string, maxLevel: number, newRarity
 
 // ===== 보스 전투 =====
 
-export function calcBossStats(playerAttack: number, playerHp: number) {
-  const bossMaxHp = Math.max(100, playerAttack * 10);
-  const bossAttack = Math.max(10, Math.floor(playerHp / 4));
+export function calcBossStats(playerAttack: number, playerHp: number, villageId: number = 1) {
+  // 플레이어 기준: 4~6번 정답으로 처치, 2~3번 오답으로 사망
+  const bossMaxHp = playerAttack * 5;
+  const bossAttack = Math.max(15, Math.floor(playerHp / 2.5));
   return { bossMaxHp, bossAttack };
 }
 

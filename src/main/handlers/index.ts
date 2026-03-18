@@ -14,6 +14,7 @@ import { createPvpHandlers } from './pvp';
 import { createFileHandlers } from './file-io';
 import { createCutsceneHandlers } from './cutscene';
 import { createDebugHandlers } from './debug';
+import { createRoguelikeHandlers } from './roguelike';
 
 export { HandlerMap } from './types';
 
@@ -30,5 +31,6 @@ export function createHandlers(): HandlerMap {
     ...createFileHandlers(),
     ...createCutsceneHandlers(),
     ...createDebugHandlers(),
+    ...createRoguelikeHandlers(),
   };
 }

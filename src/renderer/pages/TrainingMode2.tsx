@@ -323,7 +323,7 @@ export function TrainingMode2({ character, onBack }: Props) {
       {/* ===== SETUP ===== */}
       {phase === 'setup' && (
         <>
-          <h1 className="title">📖 트레이닝 모드 2</h1>
+          <h1 className="title">📖 트레이닝</h1>
           <p className="subtitle">블랭크 드릴 + 전문 쓰기 단계별 훈련</p>
 
           <div className="training2-setup">

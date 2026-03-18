@@ -112,6 +112,26 @@ contextBridge.exposeInMainWorld('api', {
   // 윈도우 포커스
   focusWindow: () => ipcRenderer.invoke('window:focus'),
 
+  // 로그라이크
+  roguelikeGetState: (characterId: number) => ipcRenderer.invoke('roguelike:getState', characterId),
+  roguelikeStartRun: (data: { characterId: number; startBuffs: string[]; villageId: number }) => ipcRenderer.invoke('roguelike:startRun', data),
+  roguelikeChoosePath: (data: { characterId: number; choice: 'left' | 'right' }) => ipcRenderer.invoke('roguelike:choosePath', data),
+  roguelikeGetQuestion: (data: { characterId: number; reciteMode: number }) => ipcRenderer.invoke('roguelike:getQuestion', data),
+  roguelikeSubmitAnswer: (data: { characterId: number; answer: string }) => ipcRenderer.invoke('roguelike:submitAnswer', data),
+  roguelikeCompleteTurn: (data: { characterId: number; allCorrect: boolean }) => ipcRenderer.invoke('roguelike:completeTurn', data),
+  roguelikeShopInfo: (characterId: number) => ipcRenderer.invoke('roguelike:shopInfo', characterId),
+  roguelikeShopBuy: (data: { characterId: number; shopItemId: string }) => ipcRenderer.invoke('roguelike:shopBuy', data),
+  roguelikeEventInfo: (characterId: number) => ipcRenderer.invoke('roguelike:eventInfo', characterId),
+  roguelikeEventChoice: (data: { characterId: number; choiceIndex: number }) => ipcRenderer.invoke('roguelike:eventChoice', data),
+  roguelikeSelectBuff: (data: { characterId: number; buffId: string }) => ipcRenderer.invoke('roguelike:selectBuff', data),
+  roguelikeGetBuffChoices: (characterId: number) => ipcRenderer.invoke('roguelike:getBuffChoices', characterId),
+  roguelikeEliteChoice: (data: { characterId: number; fight: boolean }) => ipcRenderer.invoke('roguelike:eliteChoice', data),
+  roguelikeEndRun: (characterId: number) => ipcRenderer.invoke('roguelike:endRun', characterId),
+  roguelikeUpgrade: (data: { characterId: number; upgradeType: string }) => ipcRenderer.invoke('roguelike:upgrade', data),
+  roguelikeBossComplete: (data: { characterId: number; villageId: number; victory: boolean }) => ipcRenderer.invoke('roguelike:bossComplete', data),
+  roguelikeDebugBoss: (characterId: number) => ipcRenderer.invoke('roguelike:debugBoss', characterId),
+  roguelikeDebugEvent: (characterId: number) => ipcRenderer.invoke('roguelike:debugEvent', characterId),
+
   // 디버그
   debugSetLevel: (data: { characterId: number; level: number; expPercent: number }) => ipcRenderer.invoke('debug:setLevel', data),
   debugResetBoss: (characterId: number) => ipcRenderer.invoke('debug:resetBoss', characterId),

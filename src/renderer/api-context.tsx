@@ -134,6 +134,24 @@ export function ClientApiProvider({ client, children }: { client: NetworkClient;
     networkGetPvpVerseRange: () => Promise.resolve({ startVerse: 1, endVerse: 32 }),
     networkSetPvpEasyMode: () => Promise.resolve(false),
 
+    // 로그라이크 (로컬 전용 - 클라이언트에서는 더미)
+    roguelikeGetState: () => Promise.resolve(null as any),
+    roguelikeStartRun: () => Promise.resolve(null as any),
+    roguelikeChoosePath: () => Promise.resolve(null as any),
+    roguelikeGetQuestion: () => Promise.resolve(null as any),
+    roguelikeSubmitAnswer: () => Promise.resolve({ correct: false, filledIndex: -1, remainingBlanks: 0 }),
+    roguelikeCompleteTurn: () => Promise.resolve(null as any),
+    roguelikeShopInfo: () => Promise.resolve(null as any),
+    roguelikeShopBuy: () => Promise.resolve({ success: false, message: '', gold: 0, playerHp: 0, playerMaxHp: 0, playerAttack: 0, playerDefense: 0 }),
+    roguelikeEventInfo: () => Promise.resolve(null as any),
+    roguelikeEventChoice: () => Promise.resolve(null as any),
+    roguelikeSelectBuff: () => Promise.resolve(null as any),
+    roguelikeGetBuffChoices: () => Promise.resolve([]),
+    roguelikeEliteChoice: () => Promise.resolve(null as any),
+    roguelikeEndRun: () => Promise.resolve(null as any),
+    roguelikeUpgrade: () => Promise.resolve({ success: false, message: '', state: null as any }),
+    roguelikeBossComplete: () => Promise.resolve(null as any),
+
     // 디버그
     debugSetLevel: () => Promise.resolve(false),
 

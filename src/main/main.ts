@@ -45,7 +45,11 @@ function createWindow() {
     minWidth: 800,
     minHeight: 600,
     autoHideMenuBar: true,
+    show: false,
   });
+
+  mainWindow.maximize();
+  mainWindow.show();
   mainWindow.setMenuBarVisibility(false);
 
   // Set up host event sender for PvP push events and gift notifications

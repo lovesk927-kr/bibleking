@@ -1,41 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import type { Character } from '../types';
-import { CHARACTER_INFO, VILLAGES, getBossForVillage } from '../constants';
+import { CHARACTER_INFO } from '../constants';
 
 interface Props {
   character: Character;
-  onRecite: () => void;
   onTraining: () => void;
   onTraining2: () => void;
   onInventory: () => void;
   onDetail: () => void;
   onBack: () => void;
+  onGame: () => void;
   isNetworkMode?: boolean;
 }
 
-export function MainScreen({ character, onRecite, onTraining, onTraining2, onInventory, onDetail, onBack, isNetworkMode }: Props) {
+export function MainScreen({ character, onTraining, onTraining2, onInventory, onDetail, onBack, onGame, isNetworkMode }: Props) {
   const expPercent = (character.exp / character.max_exp) * 100;
   const [showContact, setShowContact] = useState(false);
-  const [bossReady, setBossReady] = useState<{ name: string; emoji: string } | null>(null);
-
-  useEffect(() => {
-    // 보스전 조건 확인
-    window.api.getBossClears(character.id).then((clears: number[]) => {
-      for (const village of VILLAGES) {
-        const boss = getBossForVillage(village.id);
-        if (!boss) continue;
-        if (clears.includes(village.id)) continue;
-        const nextVillage = VILLAGES.find(v => v.id === village.id + 1);
-        const reachedNextLevel = nextVillage ? character.level >= nextVillage.levelReq : character.level >= village.levelReq;
-        if (reachedNextLevel) {
-          setBossReady({ name: boss.name, emoji: boss.emoji });
-          return;
-        }
-        break;
-      }
-      setBossReady(null);
-    });
-  }, [character.id, character.level]);
 
   return (
     <div className="page main-screen">
@@ -63,15 +43,15 @@ export function MainScreen({ character, onRecite, onTraining, onTraining2, onInv
         <button className="btn btn-game btn-detail" onClick={onDetail}>
           👤 캐릭터 상세
         </button>
-        <button className="btn btn-game btn-training" onClick={onTraining}>
-          📝 트레이닝
-        </button>
         <button className="btn btn-game btn-training2" onClick={onTraining2}>
-          📖 트레이닝 2
-          <span className="btn-new-badge">NEW</span>
+          📖 트레이닝
         </button>
-        <button className={`btn btn-game ${bossReady ? 'btn-boss-ready' : 'btn-recite'}`} onClick={onRecite}>
-          {bossReady ? `${bossReady.emoji} 보스 전투! — ${bossReady.name}` : '⚔️ 전투 시작'}
+        <button className="btn btn-game btn-training" onClick={onTraining}>
+          📝 트레이닝(시험)
+        </button>
+        <button className="btn btn-game btn-roguelike" onClick={onGame}>
+          🎮 게임
+          <span className="btn-new-badge">NEW</span>
         </button>
         <button className="btn btn-game btn-inventory" onClick={onInventory}>
           🎒 가방
